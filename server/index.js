@@ -1,10 +1,19 @@
 const express = require('express');
 const app = express();
-const port = 8000;
+const dotenv = require('dotenv')
+const mongoDb = require('./config/database');
+dotenv.config();
+
+mongoDb();
+
+app.use(express.json());
+app.use('/user', require('./routes/User'));
+
+
 app.get('/', (req, res)=>{
     res.send("Hello World");
 })
 
-app.listen(port, ()=>{
-    console.log(`Listening at port ${port}`);
+app.listen(process.env.PORT, ()=>{
+    console.log(`Listening at port ${process.env.PORT}`);
 })
