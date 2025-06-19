@@ -1,10 +1,16 @@
 const express = require('express');
-const app = express();
 const dotenv = require('dotenv')
 const mongoDb = require('./config/database');
-dotenv.config();
+const cors = require('cors')
 
+const app = express();
+dotenv.config();
 mongoDb();
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 
 app.use(express.json());
 app.use('/user', require('./routes/User'));
