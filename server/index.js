@@ -14,6 +14,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/user', require('./routes/User'));
+app.use('/problem', require('./routes/Problem'));
 
 
 app.get('/', (req, res)=>{

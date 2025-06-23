@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose')
+const {Schema} = mongoose;
 
-const TestCaseSchema = new mongoose.Schema({
+const TestCaseSchema = new Schema({
     input: { 
         type: String, 
         required: true 
@@ -10,7 +11,7 @@ const TestCaseSchema = new mongoose.Schema({
         required: true }
 }, { _id: false });
 
-const ProblemSchema = new mongoose.Schema({
+const ProblemSchema = new Schema({
     title: {
         type: String,
         required: true,
@@ -28,6 +29,10 @@ const ProblemSchema = new mongoose.Schema({
     testCases: {
         type: [TestCaseSchema],
         required: true,
+    },
+    email:{
+        type: String,
+        required: true
     }
 });
 

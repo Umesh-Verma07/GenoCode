@@ -16,7 +16,7 @@ export default function Home() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
 
-        <main className="flex-grow p-6">
+        <main className="flex-grow pt-20 p-6">
           <div className="w-full max-w-screen-lg mx-auto space-y-4">
             {problemList.map((p, idx) => (
               <div key={idx} className="flex justify-between items-center bg-white p-4 rounded-lg shadow hover:shadow-md transition w-full">

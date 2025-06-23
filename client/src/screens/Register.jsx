@@ -36,7 +36,7 @@ export default function Register() {
     <>
       <div className="flex flex-col min-h-screen">
         <div><Navbar /></div>
-        <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 py-12">
+        <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 py-20">
           <div className="w-full bg-white rounded-lg shadow border mt-10 sm:max-w-sm xl:p-0">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 
