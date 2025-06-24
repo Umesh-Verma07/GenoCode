@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar'
+import { jwtDecode } from 'jwt-decode'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
@@ -29,7 +30,9 @@ export default function Login() {
       // console.log(json.error);
       return setError(json.error);
     }
-
+    const token = jwtDecode(json.authToken);
+    localStorage.setItem("email", token.email);
+    localStorage.setItem("isAdmin", token.isAdmin);
     localStorage.setItem("authToken", json.authToken)
     navigate('/');
   }

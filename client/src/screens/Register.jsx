@@ -28,7 +28,6 @@ export default function Register() {
       // console.log(json.error);
       return setError(json.error[0].msg);
     }
-
     navigate('/login');
   }
 

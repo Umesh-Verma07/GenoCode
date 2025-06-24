@@ -1,11 +1,12 @@
-const express = require('express');
-const Problem = require('../models/Problem')
+const express = require('express')
+const Problem = require('../models/Problem.js')
+const User = require('../models/User.js')
 const router = express.Router();
 
 router.get("/list", async(req, res) =>{
     try{
         let problem = await Problem.find({});
-        res.json(problem);
+        res.json({ success: true, problem});
 
     } catch(e){
         res.status(400).json({success: false, error: e.message});
@@ -15,10 +16,18 @@ router.get("/list", async(req, res) =>{
 router.post("/create", async (req, res) =>{
    try{
     const {title, description, level, testCases, email} = req.body;
+
     
     if(!title || !description || !level || !testCases || !email){
         return res.status(500).json({success : false, error : "All fields are required!"});
     }
+    const user = await User.find({email});
+    console.log(user);
+
+    if(!user || (!user[0].isAdmin)){
+        return res.status(500).json({success : false, error : "Unauthorized: Only admin can create the problem"});
+    }
+
     const newProblem = new Problem({title, description, level, testCases, email});
     await newProblem.save();
     res.json({ success : true, message: "Problem created Successfully"});
