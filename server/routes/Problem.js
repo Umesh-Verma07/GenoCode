@@ -64,21 +64,34 @@ router.delete('/delete/:id', async(req, res)=>{
     try {
         let {id} = req.params;
         const {email} = req.body;
-        const problem = await Problem.findbyId(id);
+        const problem = await Problem.findById(id);
 
         if (!problem) {
             return res.status(404).json({success : false, error: "Problem not found" });
         }
 
-        if(problem.email != email){
+        if(problem.email !== email){
             return res.status(500).json({success: false, error : "Unauthorized: Only the creator can delete this problem"});
         }
 
         await Problem.findByIdAndDelete(id);
-        res.json({success: true, message: "Problem deleted successfully"});
+        return res.json({success: true, message: "Problem deleted successfully"});
     } catch (err) {
-        res.status(500).json({success: false, error: err.message });
+        return res.status(500).json({success: false, error: err.message });
     }
 });
+
+router.get('/:id', async(req, res)=>{
+    const {id} = req.params;
+    try {
+        const problem = await Problem.findById(id);
+        if(!problem){
+            return res.status(400).json({success: true, error : "Problem not found!"});
+        }
+        res.json({success: true, problem});
+    } catch (error) {
+        return res.status(500).json({success: false, error : error.message});
+    }
+})
 
 module.exports = router;

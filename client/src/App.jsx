@@ -6,6 +6,7 @@ import Register from './screens/Register'
 import Create from './screens/Create'
 import Update from './screens/Update'
 import Problem from './screens/Problem'
+import User from './screens/User'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route exact path="/create" element={<Create/>} />
         <Route exact path="/update/:id" element={<Update/>} />
         <Route exact path="/problem/:id" element={<Problem/>} />
+        <Route exact path="/user/:id" element={<User/>} />
       </Routes>
     </Router>
   )

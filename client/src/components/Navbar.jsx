@@ -6,8 +6,11 @@ export default function () {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("email");
-        localStorage.setItem("isAdmin", false);
+        localStorage.removeItem("isAdmin");
         navigate("/");
+    }
+    const handleProfile = () => {
+        navigate(`/user/${localStorage.getItem("email")}`);
     }
 
     return (
@@ -23,6 +26,7 @@ export default function () {
                             <div>
                                 {((localStorage.getItem('isAdmin')) ? <a href="/create" className="bg-white text-primary-500 hover:bg-gray-100 mr-2 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Add Problem</a> : "")}
                                 <a href="/" onClick={handleLogout} className="bg-white text-primary-500 hover:bg-gray-100 mr-2 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Logout</a>
+                                <a onClick={handleProfile} className="bg-white text-primary-500 hover:bg-gray-100 mr-2 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Profile</a>
                             </div>
                             :
                             <div>

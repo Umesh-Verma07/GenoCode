@@ -7,7 +7,11 @@ const submissionSchema = new Schema({
         ref: 'Problem',
         required: true
     },
-    email:{
+    problemName:{
+        type: String,
+        required: true,
+    },
+    user:{
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true

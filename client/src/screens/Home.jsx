@@ -42,7 +42,7 @@ export default function Home() {
             {loading && <p className="text-center">Loading problems...</p>}
             {error && <p className="text-center text-red-600">Error: {error}</p>}
             {problems.map((p, idx) => (
-              <div key={idx} onClick={()=>{navigate(`/problem/${p._id}`, {state : {p}})}} className="flex justify-between items-center bg-white p-4 rounded-lg shadow hover:shadow-md transition w-full">
+              <div key={idx} onClick={()=>{navigate(`/problem/${p._id}`)}} className="flex justify-between items-center bg-white p-4 rounded-lg shadow hover:shadow-md transition w-full">
                 <span className="text-gray-800 font-medium">{p.title}</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${p.level === 'Easy' ? 'bg-green-100 text-green-800' : p.level === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`} >{p.level}</span>
               </div>

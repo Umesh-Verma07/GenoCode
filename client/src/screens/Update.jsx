@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -6,19 +6,21 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 export default function CreateProblem() {
     const { state } = useLocation();
     const navigate = useNavigate();
-
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [level, setLevel] = useState();
+    const [level, setLevel] = useState('');
     const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
     const [error, setError] = useState('');
-    
-    if(state){
-        setTitle(state.problem.title);
-        setDescription(state.problem.description);
-        setLevel(state.problem.level);
-        setTestCases(state.problem.testCases);
-    }
+
+    useEffect(() => {
+        if (state?.problem) {
+            setTitle(state.problem.title);
+            setDescription(state.problem.description);
+            setLevel(state.problem.level);
+            setTestCases(state.problem.testCases);
+        }
+    }, [state]);
+
 
     const handleChangeCase = (idx, field, value) => {
         const updated = [...testCases];
@@ -38,7 +40,7 @@ export default function CreateProblem() {
         e.preventDefault();
         const problemData = { title, description, level, testCases, email: localStorage.getItem('email') };
         try {
-            const response = await fetch(`${SERVER_URL}/problem/update/${state.problem.id}`, {
+            const response = await fetch(`${SERVER_URL}/problem/update/${state.problem._id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,7 +52,7 @@ export default function CreateProblem() {
             if (!json.success) {
                 throw new Error(json.error);
             }
-            navigate('/');
+            navigate(`/user/${state.problem.email}`);
         } catch (e) {
             console.error(e);
             setError(e.message);
@@ -61,7 +63,7 @@ export default function CreateProblem() {
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Navbar />
             <main className="flex-grow container mx-auto mt-16 px-4 py-7">
-                <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+                <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
                     <h1 className="text-2xl font-bold mb-4">{title}</h1>
 
                     {error && (
