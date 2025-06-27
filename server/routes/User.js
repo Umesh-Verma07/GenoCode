@@ -28,7 +28,6 @@ router.post('/register', ...registerValidation, async (req, res) => {
         await newUser.save();
         return res.json({ success: true });
     } catch (error) {
-        console.log(error)
         return res.json({ success: false, error: error });
     }
 });
@@ -57,7 +56,6 @@ router.post('/login', async (req, res) => {
         return res.json({ success: true, authToken: authToken });
 
     } catch (error) {
-        console.log(error);
         res.json({ success: false, error: error });
     }
 });
