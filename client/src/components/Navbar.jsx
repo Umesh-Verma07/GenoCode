@@ -12,7 +12,7 @@ export default function () {
     const handleProfile = () => {
         navigate(`/user/${localStorage.getItem("email")}`);
     }
-    
+
     return (
         <nav className="fixed bg-primary-500 w-full z-20 top-0 start-0 border-b border-gray-200">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-8 py-4">

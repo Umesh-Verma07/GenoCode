@@ -89,11 +89,11 @@ export default function CreateProblem() {
                 <div key={idx} className="grid grid-cols-6 gap-3 items-end" >
                   <div className="col-span-2">
                     <label className="block mb-1 text-sm">Input</label>
-                    <input type="text" className="w-full border rounded px-2 py-1" value={tc.input} onChange={(e) => handleChangeCase(idx, 'input', e.target.value)} required />
+                    <textarea cols="10" className="w-full border rounded px-2 py-1" value={tc.input} onChange={(e) => handleChangeCase(idx, 'input', e.target.value)} required />
                   </div>
                   <div className="col-span-2">
                     <label className="block mb-1 text-sm">Output</label>
-                    <input type="text" className="w-full border rounded px-2 py-1" value={tc.output} onChange={(e) => handleChangeCase(idx, 'output', e.target.value)} required/>
+                    <textarea className="w-full border rounded px-2 py-1" value={tc.output} onChange={(e) => handleChangeCase(idx, 'output', e.target.value)} required/>
                   </div>
                   <div className="col-span-2 text-right">
                     <button type="button" onClick={() => removeTestCase(idx)} className="text-red-600 hover:underline text-sm" > Remove </button>
