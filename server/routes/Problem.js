@@ -22,7 +22,6 @@ router.post("/create", async (req, res) =>{
         return res.status(500).json({success : false, error : "All fields are required!"});
     }
     const user = await User.find({email});
-    console.log(user);
 
     if(!user || (!user[0].isAdmin)){
         return res.status(500).json({success : false, error : "Unauthorized: Only admin can create the problem"});
