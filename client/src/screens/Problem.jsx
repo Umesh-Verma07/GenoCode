@@ -22,6 +22,7 @@ export default function ProblemPage() {
           return new Error(data.error);
         }
         setProblem(data.problem);
+        setStdin(data.problem.testCases[0].input);
       } catch (e) {
         return new Error(e.message);
       }
@@ -34,22 +35,19 @@ export default function ProblemPage() {
   }
 
   const handleRun = async() => {
-    console.log("before");
     const response = await fetch(`${COMPILER_URL}/run`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({code, language})
+      body: JSON.stringify({code, language, input: stdin})
     })
-    console.log("after");
     const json = await response.json();
     if (!json.success) {
       setStdout(json.error);
     }else{
       setStdout(json.output);
     }
-    console.log("last");
   };
 
   const handleSubmit = () => {

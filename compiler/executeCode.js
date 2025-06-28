@@ -7,21 +7,21 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-function executeCode(filePath, language) {
+function executeCode(filePath, language, input) {
   const baseName = path.basename(filePath, path.extname(filePath));
   let cmd;
 
   switch (language) {
     case 'cpp':
-      cmd = `g++ "${filePath}" -o "${path.join(outputDir, baseName)}" && "${path.join(outputDir, baseName)}"`;
+      cmd = `g++ ${filePath} -o ${path.join(outputDir, baseName)} && ${path.join(outputDir, baseName)} < ${input}`;
       break;
 
     case 'py':
-      cmd = `python "${filePath}"`;
+      cmd = `python ${filePath} < ${input}`;
       break;
 
     default:
-      return Promise.reject({ error: `Unsupported language: ${language}` });
+      return Promise.reject(`Unsupported language: ${language}`);
   }
 
   return new Promise((resolve, reject) => {
