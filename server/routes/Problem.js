@@ -80,14 +80,36 @@ router.delete('/delete/:id', async(req, res)=>{
     }
 });
 
+router.get('/test/:id', async(req, res)=>{
+    const {id} = req.params;
+    try {
+        const problem = await Problem.findById(id);
+        if(!problem){
+            return res.status(400).json({success: false, error : "Problem not found!"});
+        }
+        //console.log(problem.testCases);
+        return res.json({success: true, testCases: problem.testCases, title: problem.title});
+    } catch (error) {
+        return res.status(500).json({success: false, error : error.message});
+    }
+})
 router.get('/:id', async(req, res)=>{
     const {id} = req.params;
     try {
         const problem = await Problem.findById(id);
         if(!problem){
-            return res.status(400).json({success: true, error : "Problem not found!"});
+            return res.status(400).json({success: false, error : "Problem not found!"});
         }
-        res.json({success: true, problem});
+        console.log(problem);
+        const newProblem = {
+            _id: problem._id,
+            title: problem.title,
+            description: problem.description,
+            level: problem.level,
+            testCases: [problem.testCases[0]],
+            email: problem.email
+        }
+        res.json({success: true, problem: newProblem});
     } catch (error) {
         return res.status(500).json({success: false, error : error.message});
     }

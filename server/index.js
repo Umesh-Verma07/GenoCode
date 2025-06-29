@@ -7,14 +7,12 @@ const app = express();
 dotenv.config();
 mongoDb();
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use('/user', require('./routes/User'));
 app.use('/problem', require('./routes/Problem'));
+app.use('/submit', require('./routes/Submission'));
 
 
 app.get('/', (req, res)=>{

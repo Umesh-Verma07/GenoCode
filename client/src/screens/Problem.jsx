@@ -50,8 +50,20 @@ export default function ProblemPage() {
     }
   };
 
-  const handleSubmit = () => {
-
+  const handleSubmit = async() => {
+    const response = await fetch(`${COMPILER_URL}/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({code: code, language: language, email: localStorage.getItem("email"), problemId: id})
+    })
+    const json = await response.json();
+    if (!json.success) {
+      setStdout(json.error);
+    }else{
+      setStdout(json.output.stdout);
+    }
   };
 
   return (

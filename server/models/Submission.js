@@ -11,10 +11,13 @@ const submissionSchema = new Schema({
         type: String,
         required: true,
     },
-    user:{
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+    email:{
+        type: String,
         required: true
+    },
+    code:{
+        type: String,
+        required: true,
     },
     verdict:{
         type: String,

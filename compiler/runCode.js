@@ -7,7 +7,7 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-function executeCode(filePath, language, input) {
+function runCode(filePath, language, input) {
   const baseName = path.basename(filePath, path.extname(filePath));
   let cmd;
 
@@ -34,4 +34,4 @@ function executeCode(filePath, language, input) {
   });
 }
 
-module.exports = executeCode;
+module.exports = runCode;
