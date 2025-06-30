@@ -71,7 +71,7 @@ router.get('/:id', async (req, res) => {
         if(user.isAdmin){
             problem = await Problem.find({email: user.email});
         }else{
-            problem = await Submission.find({user: user._id});
+            problem = await Submission.find({email: user.email});
         }
         res.json({ success: true, user, problem});
     } catch (error) {

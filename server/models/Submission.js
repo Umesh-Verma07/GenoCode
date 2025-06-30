@@ -3,8 +3,7 @@ const {Schema} = mongoose;
 
 const submissionSchema = new Schema({
     problemId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Problem',
+        type: String,
         required: true
     },
     problemName:{
@@ -18,10 +17,6 @@ const submissionSchema = new Schema({
     code:{
         type: String,
         required: true,
-    },
-    verdict:{
-        type: String,
-        required: true
     },
     date: {
         type: Date,

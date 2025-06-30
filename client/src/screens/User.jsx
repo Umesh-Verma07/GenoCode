@@ -88,7 +88,7 @@ export default function User() {
                                     <li key={sub._id} className="bg-white p-4 rounded-lg shadow flex justify-between items-center">
                                         <div>
                                             <p className="font-medium">{sub.problemName}</p>
-                                            <p className="text-sm text-gray-600">Verdict: {sub.verdict}</p>
+                                            {/* <p className="text-sm text-gray-600">Verdict: {sub.verdict}</p> */}
                                             <p className="text-sm text-gray-500">{new Date(sub.date).toLocaleString()}</p>
                                         </div>
                                         <button onClick={() => navigate(`/problem/${sub.problemId}`)} className="text-primary-600 hover:underline text-sm">View</button>

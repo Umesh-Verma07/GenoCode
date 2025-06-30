@@ -20,8 +20,8 @@ app.post('/submit', async(req, res)=>{
     }
     try {
         const filePath = generateFile(code, language);
-        const verdict = await submitCode(filePath, code, language, problemId, email);
-        return res.status(200).json({success: true, output : verdict});
+        const output = await submitCode(filePath, code, language, problemId, email);
+        return res.status(200).json({success: true, output : output.message});
     } catch (error) {
         return res.status(400).json({success : false, error});
     }
@@ -36,7 +36,7 @@ app.post('/run', async(req, res)=>{
         const filePath = generateFile(code, language);
         const inputPath = generateInputFile(input);
         const output = await runCode(filePath, language, inputPath);
-        return res.status(200).json({success: true, output : output.stdout});
+        return res.status(200).json({success: true, output : output});
     } catch (error) {
         return res.status(400).json({success : false, error});
     }

@@ -7,6 +7,20 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
+function runWithTimeout(cmd, timeLimit = 2000){
+  return new Promise((resolve, reject)=>{
+    exec(cmd, {timeout: timeLimit, killSignal: 'SIGKILL'}, (err, stdout, stderr)=>{
+      if(err){
+        if(err.killed){
+          return reject({type:"TLE", message: "Time Limit Exceeded"});
+        }
+        return reject({type: "RE", message: stderr.trim() || err.message});
+      }
+      resolve(stdout);
+    })
+  })
+}
+
 function runCode(filePath, language, input) {
   const baseName = path.basename(filePath, path.extname(filePath));
   let cmd;
@@ -24,14 +38,6 @@ function runCode(filePath, language, input) {
       return Promise.reject(`Unsupported language: ${language}`);
   }
 
-  return new Promise((resolve, reject) => {
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) {
-        return reject({ error: stderr || err.message });
-      }
-      resolve({ stdout });
-    });
-  });
+  return runWithTimeout(cmd);
 }
-
 module.exports = runCode;

@@ -12,6 +12,19 @@ export default function ProblemPage() {
   const [code, setCode] = useState('');
   const [stdin, setStdin] = useState('')
   const [stdout, setStdout] = useState('')
+  const [loadingRun, setLoadingRun] = useState(false)
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+
+  const codeKey = `${id}${localStorage.getItem("email")}`
+
+  useEffect(() => {
+    const draft = localStorage.getItem(codeKey);
+    if (draft != null) setCode(draft);
+  }, [id]);
+
+  useEffect(() => {
+    localStorage.setItem(codeKey, code);
+  }, [code, id]);
 
   useEffect(() => {
     async function fetchProblem() {
@@ -34,37 +47,48 @@ export default function ProblemPage() {
     return <p className="p-8 text-center">No problem data found.</p>;
   }
 
-  const handleRun = async() => {
+  const handleRun = async () => {
+    setLoadingRun(true)
+    setStdout('Running ....')
     const response = await fetch(`${COMPILER_URL}/run`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({code, language, input: stdin})
+      body: JSON.stringify({ code, language, input: stdin })
     })
     const json = await response.json();
     if (!json.success) {
-      setStdout(json.error);
-    }else{
+      setStdout(json.error.message || json.error);
+    } else {
       setStdout(json.output);
     }
+    setLoadingRun(false)
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
+    setStdout('Submitting ....')
+    setLoadingSubmit(true)
     const response = await fetch(`${COMPILER_URL}/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({code: code, language: language, email: localStorage.getItem("email"), problemId: id})
+      body: JSON.stringify({ code: code, language: language, email: localStorage.getItem("email"), problemId: id })
     })
     const json = await response.json();
     if (!json.success) {
-      setStdout(json.error);
-    }else{
-      setStdout(json.output.stdout);
+      if (json.error) {
+        setStdout(json.error.message || json.error);
+      } else {
+        setStdout("Some error occurs ...");
+      }
+    } else {
+      setStdout(json.output);
     }
+    setLoadingSubmit(false)
   };
+
 
   return (
     <div className="flex flex-col min-h-screen scrollFix">
@@ -85,8 +109,30 @@ export default function ProblemPage() {
               </select>
             </div>
             <div className="flex space-x-2">
-              <button onClick={handleRun} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded"> Run </button>
-              <button onClick={handleSubmit} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1 rounded" > Submit </button>
+              <button onClick={handleRun} disabled={loadingRun} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded">
+                {loadingRun ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  </>
+                ) : (
+                  "Run"
+                )}
+              </button>
+              <button onClick={handleSubmit} disabled={loadingSubmit} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1 rounded" >
+                {loadingSubmit ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
             </div>
           </div>
           <Editor height="calc(65vh - 6rem)" language={language} value={code} theme="vs-dark" onChange={v => setCode(v)} options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: 'on' }} />

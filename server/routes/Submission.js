@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Submission = require('../models/Submission.js')
 
-
 router.post('/:id', async(req, res)=>{
     const {id} = req.params;
     const {email, code, title} = req.body;
@@ -15,9 +14,5 @@ router.post('/:id', async(req, res)=>{
         res.status(400).json({success: false, error: error});
     }
 })
-
-
-
-
 
 module.exports = router;

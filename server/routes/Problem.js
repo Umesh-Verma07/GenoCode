@@ -87,7 +87,6 @@ router.get('/test/:id', async(req, res)=>{
         if(!problem){
             return res.status(400).json({success: false, error : "Problem not found!"});
         }
-        //console.log(problem.testCases);
         return res.json({success: true, testCases: problem.testCases, title: problem.title});
     } catch (error) {
         return res.status(500).json({success: false, error : error.message});
