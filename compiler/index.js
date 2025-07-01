@@ -2,9 +2,9 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 const generateFile = require('./generateFile');
-const generateInputFile = require('./generateInputFile');
 const runCode = require('./runCode');
 const submitCode = require('./submitCode');
+const generateAIReview = require('./generateAIReview');
 const cors = require('cors')
 dotenv.config();
 
@@ -34,9 +34,21 @@ app.post('/run', async(req, res)=>{
     }
     try {
         const filePath = generateFile(code, language);
-        const inputPath = generateInputFile(input);
-        const output = await runCode(filePath, language, inputPath);
+        const output = await runCode(filePath, language, input);
         return res.status(200).json({success: true, output : output});
+    } catch (error) {
+        return res.status(400).json({success : false, error});
+    }
+})
+
+app.post('/review', async(req, res)=>{
+    const {code} = req.body;
+    if(!code){
+        return res.status(400).json({success: false, error: "Empty code body"});
+    }
+    try {
+        const response = await generateAIReview(code);
+        res.status(200).json({success : true, text : response});
     } catch (error) {
         return res.status(400).json({success : false, error});
     }

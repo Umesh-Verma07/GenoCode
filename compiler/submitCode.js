@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
-const generateInputFile = require('./generateInputFile')
 const runCode = require('./runCode')
 
 const outputDir = path.join(__dirname, 'outputs');
@@ -18,11 +17,9 @@ async function submitCode(filePath, code, language, problemId, email) {
 
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
-    const inputPath = generateInputFile(tc.input);
-
     let stdout;
     try {
-      stdout = await runCode(filePath, language, inputPath);
+      stdout = await runCode(filePath, language, tc.input);
     } catch (e) {
       if (e.type === 'TLE' || e.type === 'RE') throw e;
       throw { type: 'CE', message: e.message || String(e) };
