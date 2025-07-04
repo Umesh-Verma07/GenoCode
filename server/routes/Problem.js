@@ -87,11 +87,12 @@ router.get('/test/:id', async(req, res)=>{
         if(!problem){
             return res.status(400).json({success: false, error : "Problem not found!"});
         }
-        return res.json({success: true, testCases: problem.testCases, title: problem.title});
+        return res.json({success: true, testCases: problem.testCases, title: problem.title, level: problem.level});
     } catch (error) {
         return res.status(500).json({success: false, error : error.message});
     }
 })
+
 router.get('/:id', async(req, res)=>{
     const {id} = req.params;
     try {
@@ -99,7 +100,6 @@ router.get('/:id', async(req, res)=>{
         if(!problem){
             return res.status(400).json({success: false, error : "Problem not found!"});
         }
-        console.log(problem);
         const newProblem = {
             _id: problem._id,
             title: problem.title,

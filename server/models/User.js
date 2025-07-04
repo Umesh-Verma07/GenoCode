@@ -6,6 +6,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    username: {
+        type : String,
+        required: true
+    },
     email:{
         type: String,
         required: true,
@@ -18,6 +22,21 @@ const userSchema = new Schema({
     isAdmin:{
         type: Boolean,
         default: false
+    },
+    institute: {
+        type: String
+    },
+    location:{
+        type: String
+    },
+    skills:{
+        type: [String]
+    },
+    image:{
+        type:String
+    },
+    rank:{
+        type: Number
     },
     date:{
         type: Date,

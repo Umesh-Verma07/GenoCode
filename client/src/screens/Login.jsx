@@ -6,7 +6,7 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 export default function Login() {
 
-  const [user, setUser] = useState({ email: "", password: "" });
+  const [user, setUser] = useState({ userId: "", password: "" });
   const [error, setError] = useState('')
 
   let navigate = useNavigate();
@@ -27,11 +27,11 @@ export default function Login() {
 
     const json = await response.json();
     if (!json.success) {
-      // console.log(json.error);
       return setError(json.error);
     }
     const token = jwtDecode(json.authToken);
     localStorage.setItem("email", token.email);
+    localStorage.setItem("username", token.username);
     localStorage.setItem("isAdmin", token.isAdmin);
     localStorage.setItem("authToken", json.authToken)
     navigate('/');
@@ -52,8 +52,8 @@ export default function Login() {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Login</h1>
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
-                  <input type="email" name="email" id="email" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@company.com" required />
+                  <label htmlFor="userId" className="block mb-2 text-sm font-medium text-gray-900">Username or Email</label>
+                  <input type="text" name="userId" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@company.com" required />
                 </div>
                 <div>
                   <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>

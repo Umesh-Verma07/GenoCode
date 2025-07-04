@@ -6,11 +6,12 @@ export default function () {
     const handleLogout = () => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("email");
+        localStorage.removeItem("username");
         localStorage.removeItem("isAdmin");
         navigate("/");
     }
     const handleProfile = () => {
-        navigate(`/user/${localStorage.getItem("email")}`);
+        navigate(`/user/${localStorage.getItem("username")}`);
     }
 
     return (

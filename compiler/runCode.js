@@ -7,14 +7,14 @@ if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-function runWithTimeout(cmd, input, timeLimit = 2000){
-  return new Promise((resolve, reject)=>{
-    const child = exec(cmd, {timeout: timeLimit, killSignal: 'SIGKILL'}, (err, stdout, stderr)=>{
-      if(err){
-        if(err.killed){
-          return reject({type:"TLE", message: "Time Limit Exceeded"});
+function runWithTimeout(cmd, input, timeLimit = 2000) {
+  return new Promise((resolve, reject) => {
+    const child = exec(cmd, { timeout: timeLimit, killSignal: 'SIGKILL' }, (err, stdout, stderr) => {
+      if (err) {
+        if (err.killed) {
+          return reject({ type: "TLE", message: "Time Limit Exceeded" });
         }
-        return reject({type: "RE", message: stderr.trim() || err.message});
+        return reject({ type: "RE", message: stderr.trim() || err.message });
       }
       resolve(stdout);
     })
@@ -36,10 +36,17 @@ function runCode(filePath, language, input) {
       cmd = `python ${filePath}`;
       break;
 
+    case 'java':
+      cmd = `javac -d ${outputDir} ${filePath} && java -cp ${outputDir} ${"Main"}`;
+      break;
+
+    case 'js':
+      cmd = `node ${filePath}`;
+      break;
+
     default:
       return Promise.reject(`Unsupported language: ${language}`);
   }
-
   return runWithTimeout(cmd, input);
 }
 module.exports = runCode;

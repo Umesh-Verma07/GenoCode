@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 export default function Register() {
-  const [user, setUser] = useState({ name: "", email: "", password: "" });
+  const [user, setUser] = useState({ name: "", email: "", password: "", username: "" });
   const [error, setError] = useState('')
 
   let navigate = useNavigate();
@@ -49,6 +49,10 @@ export default function Register() {
                 <div>
                   <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
                   <input type="text" name="name" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Enter your name" required />
+                </div>
+                <div>
+                  <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900">Username</label>
+                  <input type="text" name="username" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Enter a unique username" required />
                 </div>
                 <div>
                   <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>

@@ -7,6 +7,7 @@ import Create from './screens/Create'
 import Update from './screens/Update'
 import Problem from './screens/Problem'
 import User from './screens/User'
+import EditUser from './screens/EditUser'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route exact path="/update/:id" element={<Update/>} />
         <Route exact path="/problem/:id" element={<Problem/>} />
         <Route exact path="/user/:id" element={<User/>} />
+        <Route exact path="/user/edit/:id" element={<EditUser/>} />
       </Routes>
     </Router>
   )

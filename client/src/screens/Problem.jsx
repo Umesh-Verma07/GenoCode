@@ -25,12 +25,12 @@ export default function ProblemPage() {
 
   const isFirstLoad = useRef(true);
 
-  const codeKey = `${id}${localStorage.getItem("email")}`
+  const codeKey = `${id}${localStorage.getItem("email")}${language}`
 
   useEffect(() => {
     const draft = localStorage.getItem(codeKey);
     if (draft != null) setCode(draft);
-  }, [id]);
+  }, [id, language]);
 
   useEffect(() => {
     if (isFirstLoad.current) {
@@ -38,7 +38,7 @@ export default function ProblemPage() {
       return;
     }
     localStorage.setItem(codeKey, code);
-  }, [code]);
+  }, [code, language]);
 
   useEffect(() => {
     async function fetchProblem() {
@@ -74,7 +74,7 @@ export default function ProblemPage() {
     })
     const json = await response.json();
     if (!json.success) {
-      setStdout(json.error.message || json.error);
+      setStdout(json.error.message || "Server error ....");
     } else {
       setStdout(json.output);
     }
@@ -98,16 +98,13 @@ export default function ProblemPage() {
     const json = await response.json();
     if (!json.success) {
       if (json.error) {
-        setStdout(json.error.message || json.error);
-      } else {
-        setStdout("Some error occurs ...");
+        setStdout(json.error.message || "Server error ....");
       }
     } else {
       setStdout(json.output);
     }
     setLoadingSubmit(false)
   };
-
   const handleReview = async () => {
     if (!localStorage.getItem("authToken")) {
       navigate('/login');
@@ -151,6 +148,7 @@ export default function ProblemPage() {
                 <option value="cpp">C++</option>
                 <option value="java">Java</option>
                 <option value="py">Python</option>
+                <option value="js">JavaScript</option>
               </select>
             </div>
             <div className="flex space-x-2">

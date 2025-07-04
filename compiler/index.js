@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+dotenv.config();
 const generateFile = require('./generateFile');
 const runCode = require('./runCode');
 const submitCode = require('./submitCode');
 const generateAIReview = require('./generateAIReview');
 const cors = require('cors')
-dotenv.config();
 
 app.use(cors());
 
@@ -35,6 +35,7 @@ app.post('/run', async(req, res)=>{
     try {
         const filePath = generateFile(code, language);
         const output = await runCode(filePath, language, input);
+        //delete file
         return res.status(200).json({success: true, output : output});
     } catch (error) {
         return res.status(400).json({success : false, error});

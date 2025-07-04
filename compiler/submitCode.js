@@ -10,7 +10,7 @@ if (!fs.existsSync(outputDir)) {
 
 async function submitCode(filePath, code, language, problemId, email) {
   const res = await axios.get(`${process.env.DATABASE_SERVER}/problem/test/${problemId}`);
-  const { success, testCases = [] } = res.data;
+  const { success, testCases = [], level, title } = res.data;
   if (!success) {
     throw { success: false, error: "Could not load test cases" };
   }
@@ -24,13 +24,12 @@ async function submitCode(filePath, code, language, problemId, email) {
       if (e.type === 'TLE' || e.type === 'RE') throw e;
       throw { type: 'CE', message: e.message || String(e) };
     }
-
-    if (stdout !== tc.output) {
+    if (stdout.trim() !== tc.output.trim()) {
       throw { type: 'WA', message: `Wrong Answer on test #${i + 1}`, expected: tc.output, actual: stdout };
     }
   }
   try {
-    const payload = { email, code, title: res.data.title };
+    const payload = { email, code, title, level, language };
     await axios.post(`${process.env.DATABASE_SERVER}/submit/${problemId}`, payload,
       {
         headers: { 'Content-Type': 'application/json' }

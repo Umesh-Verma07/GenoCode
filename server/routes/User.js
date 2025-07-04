@@ -8,6 +8,11 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const { registerValidation } = require('../validators/authValidator')
 
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const { storage } = require('../config/cloudinaryConfig');
+const upload = multer({ storage });
+
 router.post('/register', ...registerValidation, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -23,6 +28,7 @@ router.post('/register', ...registerValidation, async (req, res) => {
         const newUser = new User({
             name: req.body.name,
             email: req.body.email,
+            username: req.body.username,
             password: hashPass,
         })
         await newUser.save();
@@ -34,15 +40,14 @@ router.post('/register', ...registerValidation, async (req, res) => {
 
 router.post('/login', async (req, res) => {
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ success: false, errors: errors.array() });
-    }
-
-    let { email, password } = req.body;
-
+    let { userId, password } = req.body;
     try {
-        let userData = await User.findOne({ email });
+        let userData;
+        if (userId.includes('@')) {
+            userData = await User.findOne({ email: userId });
+        } else {
+            userData = await User.findOne({ username: userId });
+        }
         if (!userData) {
             return res.status(400).json({ error: "User does not exist" });
         }
@@ -52,7 +57,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Invalid Password" });
         }
 
-        const authToken = jwt.sign({ email: userData.email, isAdmin: userData.isAdmin }, process.env.JWTSECRET);
+        const authToken = jwt.sign({ email: userData.email, isAdmin: userData.isAdmin, username: userData.username }, process.env.JWTSECRET);
         return res.json({ success: true, authToken: authToken });
 
     } catch (error) {
@@ -60,20 +65,49 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.put('/update/:id', upload.single('image'), async (req, res) => {
+    const { id } = req.params;
+    const { name, institute, location, skills, removeImage } = req.body;
+    try {
+        const user = await User.findOne({ username: id });
+
+        if (user.image && (removeImage === 'true' || req.file && user.image.includes('cloudinary.com'))) {
+            const parts = user.image.split('/');
+            const fileWithExt = parts[parts.length - 1];
+            const publicId = fileWithExt.substring(0, fileWithExt.lastIndexOf('.'));
+            await cloudinary.uploader.destroy(`Online_Judge/${publicId}`);
+            user.image = '';
+        }
+
+        user.name = name;
+        user.institute = institute;
+        user.location = location;
+        user.skills = skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [];
+        if (req.file && req.file.path) {
+            user.image = req.file.path;
+        }
+
+        await user.save();
+        res.json({ success: true, message: "User Updated!" });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const user = await User.findOne({ email: id });
+        const user = await User.findOne({ username: id });
         if (!user) {
             return res.status(400).json({ success: false, error: "User not found!" });
         }
         let problem = [];
-        if(user.isAdmin){
-            problem = await Problem.find({email: user.email});
-        }else{
-            problem = await Submission.find({email: user.email});
+        if (user.isAdmin) {
+            problem = await Problem.find({ email: user.email });
+        } else {
+            problem = await Submission.find({ email: user.email });
         }
-        res.json({ success: true, user, problem});
+        res.json({ success: true, user, problem });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
