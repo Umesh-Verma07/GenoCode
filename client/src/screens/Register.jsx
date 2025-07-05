@@ -25,7 +25,6 @@ export default function Register() {
 
     const json = await response.json();
     if (!json.success) {
-      // console.log(json.error);
       return setError(json.error[0].msg);
     }
     navigate('/login');

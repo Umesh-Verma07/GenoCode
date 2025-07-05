@@ -43,12 +43,12 @@ app.post('/run', async(req, res)=>{
 })
 
 app.post('/review', async(req, res)=>{
-    const {code} = req.body;
+    const {code, problem} = req.body;
     if(!code){
         return res.status(400).json({success: false, error: "Empty code body"});
     }
     try {
-        const response = await generateAIReview(code);
+        const response = await generateAIReview(code, problem);
         res.status(200).json({success : true, text : response});
     } catch (error) {
         return res.status(400).json({success : false, error});
@@ -59,6 +59,6 @@ app.get("/", (req, res) =>{
     res.send("Hello World");
 })
 
-app.listen(process.env.PORT, ()=>{
+app.listen(`${process.env.PORT}`, ()=>{
     console.log(`Listening at port ${process.env.PORT}`);
 })

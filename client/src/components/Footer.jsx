@@ -1,31 +1,33 @@
 import logo from '../assets/logo.png'
+import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
+
 export default function Footer() {
     return (
-        <footer className="bg-primary-400 shadow-sm">
-            <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                    <a href="/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                        <img src={logo} className="h-8" alt="Flowbite Logo" />
-                        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">OnlineJudge</span>
-                    </a>
-                    <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0">
-                        <li>
-                            <a href="/" className="hover:underline me-4 md:me-6">About</a>
-                        </li>
-                        <li>
-                            <a href="/" className="hover:underline me-4 md:me-6">Privacy Policy</a>
-                        </li>
-                        <li>
-                            <a href="/" className="hover:underline me-4 md:me-6">Licensing</a>
-                        </li>
-                        <li>
-                            <a href="/" className="hover:underline">Contact</a>
-                        </li>
-                    </ul>
+        <footer className="bg-primary-800 border-t border-primary-400/50">
+            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4">
+                {/* Logo Left */}
+                <div className="flex items-center gap-2 w-1/3 justify-start">
+                    <img src={logo} alt="OJ" className="h-6 w-6" />
+                    <span className="font-semibold text-white text-base tracking-tight">OnlineJudge</span>
                 </div>
-                <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-                <span className="block text-sm text-white sm:text-center">© 2025 <a href="/" className="hover:underline">OnlineJudge™</a>. All Rights Reserved.</span>
+                {/* Center Links */}
+                <ul className="flex-1 flex justify-center gap-6 text-sm font-medium text-white">
+                    <li><a href="#" className="hover:text-yellow-200 transition">About</a></li>
+                    <li><a href="#" className="hover:text-yellow-200 transition">Privacy</a></li>
+                    <li><a href="#" className="hover:text-yellow-200 transition">Licensing</a></li>
+                    <li><a href="#" className="hover:text-yellow-200 transition">Contact</a></li>
+                </ul>
+                {/* Social Icons Right */}
+                <div className="flex gap-3 w-1/3 justify-end">
+                    <a href="https://github.com/" className="hover:text-yellow-200 transition text-white text-lg"><FaGithub /></a>
+                    <a href="https://twitter.com/" className="hover:text-yellow-200 transition text-white text-lg"><FaTwitter /></a>
+                    <a href="https://linkedin.com/" className="hover:text-yellow-200 transition text-white text-lg"><FaLinkedin /></a>
+                </div>
+            </div>
+            {/* Copyright */}
+            <div className="text-center text-xs text-white/80 border-t border-primary-400/50 py-2">
+                © 2025 OnlineJudge™. All Rights Reserved.
             </div>
         </footer>
-    )
+    );
 }

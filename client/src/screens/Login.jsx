@@ -34,6 +34,9 @@ export default function Login() {
     localStorage.setItem("username", token.username);
     localStorage.setItem("isAdmin", token.isAdmin);
     localStorage.setItem("authToken", json.authToken)
+    if(token.image){
+      localStorage.setItem("userImage", token.image)
+    }
     navigate('/');
   }
 

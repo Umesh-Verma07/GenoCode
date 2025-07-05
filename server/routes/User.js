@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Invalid Password" });
         }
 
-        const authToken = jwt.sign({ email: userData.email, isAdmin: userData.isAdmin, username: userData.username }, process.env.JWTSECRET);
+        const authToken = jwt.sign({ email: userData.email, isAdmin: userData.isAdmin, username: userData.username, image: userData.image }, process.env.JWTSECRET);
         return res.json({ success: true, authToken: authToken });
 
     } catch (error) {

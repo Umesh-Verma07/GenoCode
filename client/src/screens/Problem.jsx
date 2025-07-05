@@ -117,7 +117,7 @@ export default function ProblemPage() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ code: code })
+      body: JSON.stringify({ code, problem: problem.description })
     })
     const json = await response.json();
     if (!json.success) {
@@ -133,18 +133,18 @@ export default function ProblemPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen scrollFix">
+    <div className="flex flex-col min-h-screen scrollFix bg-gradient-to-br from-indigo-50 to-gray-100">
       <Navbar />
-      <div className="max-h-full flex flex-1 overflow-hidden mt-16">
-        <aside className="w-full md:w-1/2 p-6 overflow-y-auto max-h-[calc(100vh-4rem)] bg-gray-30 border rounded border-gray-200 overscroll-contain">
+      <div className="flex flex-1 gap-6 px-4 pb-6 pt-20 mx-auto w-full">
+        <aside className="w-full md:w-[48%] bg-white rounded-2xl shadow-lg border border-gray-100 p-6 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain">
           <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
           <div className="prose max-w-none text-gray-800 whitespace-pre-line">{problem.description}</div>
         </aside>
         <div className="w-full md:w-1/2 flex flex-col">
-          <div className="flex items-center justify-between p-2 border-b border-gray-200 bg-white">
+          <div className="flex items-center justify-between p-2 rounded-t-xl border-b border-gray-200 bg-white">
             <div className="flex items-center space-x-2">
-              <label htmlFor="lang" className="font-medium">Language:</label>
-              <select id="lang" value={language} onChange={e => setLanguage(e.target.value)} className="border rounded px-2 py-1">
+              <label htmlFor="lang" className="font-semibold text-gray-700"> Language </label>
+              <select id="lang" value={language} onChange={e => setLanguage(e.target.value)} className="border rounded px-2 py-1 focus:ring-primary-400 focus:border-primary-400">
                 <option value="cpp">C++</option>
                 <option value="java">Java</option>
                 <option value="py">Python</option>
@@ -190,7 +190,7 @@ export default function ProblemPage() {
               </button>
             </div>
           </div>
-          <Editor height="calc(65vh - 6rem)" language={language} value={code} theme="vs-dark" onChange={v => setCode(v)} options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: 'on' }} />
+          <Editor height="calc(65vh - 6rem)" language={language} value={code} theme="vs-dark" onChange={v => setCode(v)} options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: 'on', scrollBeyondLastLine: false }} />
 
           {/* <div className="bg-gray-50 p-4 space-y-3 overflow-auto border-t">
             <div>
@@ -203,24 +203,24 @@ export default function ProblemPage() {
             </div>
           </div> */}
 
-          <div className="flex border-t bg-gray-100">
+          <div className="flex items-center border-b bg-white">
             {['Input', 'Output', 'Review'].map(tab => (
-              <button key={tab} onClick={() => setSelectedTab(tab)} className={`flex-1 py-2 text-center ${selectedTab === tab ? 'border-b-2 border-primary-600 bg-white' : 'text-gray-600 hover:bg-gray-200'}`}>
+              <button key={tab} onClick={() => setSelectedTab(tab)} className={`flex-1 py-2 text-center font-semibold transition ${selectedTab === tab ? 'border-b-4 border-primary-500 text-primary-700 bg-gray-100' : 'hover:bg-gray-50 text-gray-600'}`}>
                 {tab}
               </button>
             ))}
           </div>
 
-          <div className="flex-1 overflow-auto p-4 bg-white">
+          <div className="flex-1 overflow-auto p-4 bg-white rounded-b-xl">
             {selectedTab === 'Input' && (
               <textarea className="w-full h-full p-2 font-mono text-sm border rounded" value={stdin} onChange={e => setStdin(e.target.value)} />
             )}
             {selectedTab === 'Output' && (
-              <pre className="w-full h-full p-2 bg-black text-green-200 font-mono text-sm rounded overflow-auto">{stdout}</pre>
+              <pre className="w-full h-full p-2 bg-black text-green-200 font-mono text-sm rounded overflow-auto" style={{ height: "146px" }}>{stdout}</pre>
             )}
             {selectedTab === 'Review' && (
-              <div style={{ maxHeight: 'calc(97vh - 4rem - 66vh - 2px)' }} className="p-4 border rounded overflow-y-auto box-border">
-                <ReactMarkdown remarkPlugins={[remarkGfm]} components={{strong: ({ node, ...props }) => <strong className="font-bold" {...props} />}}>
+              <div className="p-4 border rounded overflow-y-auto box-border bg-white" style={{ height: "146px" }} >
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ strong: ({ node, ...props }) => <strong className="font-bold" {...props} /> }}>
                   {reviewText}
                 </ReactMarkdown>
               </div>

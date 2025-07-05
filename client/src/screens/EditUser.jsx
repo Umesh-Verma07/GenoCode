@@ -77,10 +77,10 @@ export default function EditProfile() {
             <Navbar />
             <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 mt-10">
                 <div className="w-full bg-white rounded-lg shadow border mt-10 sm:max-w-sm xl:p-0">
-                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <div className="p-6 space-y-3 md:space-y-4 sm:p-6">
                         {error && (<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>)}
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Edit Profile</h1>
-                        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6" >
+                        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-3" >
                             <div>
                                 <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
                                 <input type="text" name="name" value={user.name} onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required />
