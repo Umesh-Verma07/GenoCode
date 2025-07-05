@@ -177,26 +177,6 @@ Frontend will be available at `http://localhost:5173`. API runs on port `8000`, 
    docker run -d -p 8000:8000 --env-file server/.env oj-server
    docker run -d -p 8080:8080 oj-compiler
    ```
-
----
-
-## 📖 API Endpoints
-
-### Authentication
-- **POST** `/user/register` — Register a new user  
-- **POST** `/user/login` — Login and obtain JWT  
-
-### Problems
-- **GET** `/problem` — List all problems  
-- **GET** `/problem/:id` — Get details of a problem  
-- **POST** `/problem` — (Admin) Create a problem  
-- **PUT** `/problem/:id` — (Admin) Update a problem  
-- **DELETE** `/problem/:id` — (Admin) Delete a problem  
-
-### Submissions
-- **POST** `/submit` — Submit code for evaluation  
-- **GET** `/submit` — Get submissions for the authenticated user  
-
 ---
 
 ## 📬 Contact
