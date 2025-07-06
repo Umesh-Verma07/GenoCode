@@ -3,8 +3,7 @@ import Editor from '@monaco-editor/react'
 import Navbar from '../components/Navbar'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import AIReviewPanel from '../components/AIReviewPanel'
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const COMPILER_URL = import.meta.env.VITE_COMPILER_URL;
@@ -21,6 +20,7 @@ export default function ProblemPage() {
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [loadingReview, setLoadingReview] = useState(false)
   const [reviewText, setReviewText] = useState('')
+  const [showReviewPanel, setShowReviewPanel] = useState(false)
   const [selectedTab, setSelectedTab] = useState('Input')
 
   const isFirstLoad = useRef(true);
@@ -109,9 +109,7 @@ export default function ProblemPage() {
     if (!localStorage.getItem("authToken")) {
       navigate('/login');
     }
-    setReviewText('🔍 Scanning your code for improvements ....')
     setLoadingReview(true)
-    setSelectedTab("Review")
     const response = await fetch(`${COMPILER_URL}/review`, {
       method: 'POST',
       headers: {
@@ -176,7 +174,7 @@ export default function ProblemPage() {
                   "Submit"
                 )}
               </button>
-              <button onClick={handleReview} disabled={loadingReview} className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded transition" >
+              <button onClick={() => { handleReview(); setShowReviewPanel(true) }} disabled={loadingReview} className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded transition" >
                 {loadingReview ? (
                   <>
                     <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -192,25 +190,13 @@ export default function ProblemPage() {
           </div>
           <Editor height="calc(65vh - 6rem)" language={language} value={code} theme="vs-dark" onChange={v => setCode(v)} options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: 'on', scrollBeyondLastLine: false }} />
 
-          {/* <div className="bg-gray-50 p-4 space-y-3 overflow-auto border-t">
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Input</h4>
-              <textarea className="w-full h-20 p-2 bg-white border border-gray-300 rounded font-mono text-sm" value={stdin} placeholder="Enter test input here…" onChange={e => setStdin(e.target.value)} />
-            </div>
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-1">Output</h4>
-              <pre className="w-full h-20 p-2 bg-black text-green-200 rounded overflow-auto font-mono text-sm"> {stdout} </pre>
-            </div>
-          </div> */}
-
           <div className="flex items-center border-b bg-white">
-            {['Input', 'Output', 'Review'].map(tab => (
+            {['Input', 'Output'].map(tab => (
               <button key={tab} onClick={() => setSelectedTab(tab)} className={`flex-1 py-2 text-center font-semibold transition ${selectedTab === tab ? 'border-b-4 border-primary-500 text-primary-700 bg-gray-100' : 'hover:bg-gray-50 text-gray-600'}`}>
                 {tab}
               </button>
             ))}
           </div>
-
           <div className="flex-1 overflow-auto p-4 bg-white rounded-b-xl">
             {selectedTab === 'Input' && (
               <textarea className="w-full h-full p-2 font-mono text-sm border rounded" value={stdin} onChange={e => setStdin(e.target.value)} />
@@ -218,15 +204,9 @@ export default function ProblemPage() {
             {selectedTab === 'Output' && (
               <pre className="w-full h-full p-2 bg-black text-green-200 font-mono text-sm rounded overflow-auto" style={{ height: "146px" }}>{stdout}</pre>
             )}
-            {selectedTab === 'Review' && (
-              <div className="p-4 border rounded overflow-y-auto box-border bg-white" style={{ height: "146px" }} >
-                <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ strong: ({ node, ...props }) => <strong className="font-bold" {...props} /> }}>
-                  {reviewText}
-                </ReactMarkdown>
-              </div>
-            )}
           </div>
         </div>
+        <AIReviewPanel show={showReviewPanel} onClose={() => setShowReviewPanel(false)} reviewText={reviewText} loading={loadingReview} />
       </div>
     </div>
   );

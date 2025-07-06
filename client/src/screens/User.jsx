@@ -177,7 +177,7 @@ export default function User() {
                       <p className="font-small">{problem.title}</p>
                       <div className="text-primary-600 hover:underline text-sm">
                         <button onClick={() => navigate(`/problem/${problem._id}`)} className="text-primary-600 btn mx-2 hover:underline">View</button>
-                        <button onClick={() => navigate(`/update/${problem._id}`, { state: { problem } })} className="text-primary-600 hover:underline text-sm">Update</button>
+                        <button onClick={() => navigate(`/update/${problem._id}`, { state: { data : {problem, userId: user.username }} })} className="text-primary-600 hover:underline text-sm">Update</button>
                         <button onClick={() => handleDelete(problem._id)} className="text-red-600 hover:underline text-sm ml-2">Delete</button>
                       </div>
                     </li>

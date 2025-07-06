@@ -5,6 +5,8 @@ const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function CreateProblem() {
     const { state } = useLocation();
+    const problem = state?.data.problem;
+    const userId = state?.data.userId;
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -13,11 +15,11 @@ export default function CreateProblem() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (state?.problem) {
-            setTitle(state.problem.title);
-            setDescription(state.problem.description);
-            setLevel(state.problem.level);
-            setTestCases(state.problem.testCases);
+        if (problem) {
+            setTitle(problem.title);
+            setDescription(problem.description);
+            setLevel(problem.level);
+            setTestCases(problem.testCases);
         }
     }, [state]);
 
@@ -40,7 +42,7 @@ export default function CreateProblem() {
         e.preventDefault();
         const problemData = { title, description, level, testCases, email: localStorage.getItem('email') };
         try {
-            const response = await fetch(`${SERVER_URL}/problem/update/${state.problem._id}`, {
+            const response = await fetch(`${SERVER_URL}/problem/update/${problem._id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,7 +54,7 @@ export default function CreateProblem() {
             if (!json.success) {
                 throw new Error(json.error);
             }
-            navigate(`/user/${state.problem.email}`);
+            navigate(`/user/${userId}`);
         } catch (e) {
             console.error(e);
             setError(e.message);
