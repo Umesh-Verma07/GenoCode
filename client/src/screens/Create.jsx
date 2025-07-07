@@ -32,7 +32,8 @@ export default function CreateProblem() {
       const response = await fetch(`${SERVER_URL}/problem/create`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization' : localStorage.getItem("authToken")
         },
         body: JSON.stringify(problemData),
       });

@@ -36,7 +36,7 @@ export default function () {
             <div className="w-full flex items-center justify-between px-8 py-4">
                 <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <img src={logo} className="h-8" alt="OJ" />
-                    <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">OnlineJudge</span>
+                    <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">GenoCode</span>
                 </a>
 
                 <div className="flex items-center space-x-2 ml-auto">

@@ -40,12 +40,13 @@ export default function CreateProblem() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const problemData = { title, description, level, testCases, email: localStorage.getItem('email') };
+        const problemData = { title, description, level, testCases};
         try {
             const response = await fetch(`${SERVER_URL}/problem/update/${problem._id}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization' : localStorage.getItem("authToken")
                 },
                 body: JSON.stringify(problemData),
             });

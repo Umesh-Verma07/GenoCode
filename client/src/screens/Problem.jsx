@@ -91,7 +91,7 @@ export default function ProblemPage() {
     const response = await fetch(`${COMPILER_URL}/submit`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ code: code, language: language, email: localStorage.getItem("email"), problemId: id })
     })

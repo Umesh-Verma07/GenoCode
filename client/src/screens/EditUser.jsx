@@ -62,6 +62,9 @@ export default function EditProfile() {
 
             const res = await fetch(`${SERVER_URL}/user/update/${id}`, {
                 method: 'PUT',
+                headers: {
+                    'Authorization' : localStorage.getItem("authToken")
+                },
                 body: formData
             });
             const json = await res.json();

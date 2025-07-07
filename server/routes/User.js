@@ -11,6 +11,7 @@ const { registerValidation } = require('../validators/authValidator')
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const { storage } = require('../config/cloudinaryConfig');
+const verifyJWT = require('../validators/verifyJwt');
 const upload = multer({ storage });
 
 router.post('/register', ...registerValidation, async (req, res) => {
@@ -65,8 +66,11 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.put('/update/:id', upload.single('image'), async (req, res) => {
+router.put('/update/:id', verifyJWT, upload.single('image'), async (req, res) => {
     const { id } = req.params;
+    if (req.user.username != id) {
+        return res.status(403).json({ success: false, error: "Access Denied!" });
+    }
     const { name, institute, location, skills, removeImage } = req.body;
     try {
         const user = await User.findOne({ username: id });

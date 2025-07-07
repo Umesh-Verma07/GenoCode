@@ -8,7 +8,7 @@ export default function Footer() {
                 {/* Logo Left */}
                 <div className="flex items-center gap-2 w-1/3 justify-start">
                     <img src={logo} alt="OJ" className="h-6 w-6" />
-                    <span className="font-semibold text-white text-base tracking-tight">OnlineJudge</span>
+                    <span className="font-semibold text-white text-base tracking-tight">GenoCode</span>
                 </div>
                 {/* Center Links */}
                 <ul className="flex-1 flex justify-center gap-6 text-sm font-medium text-white">
@@ -26,7 +26,7 @@ export default function Footer() {
             </div>
             {/* Copyright */}
             <div className="text-center text-xs text-white/80 border-t border-primary-400/50 py-2">
-                © 2025 OnlineJudge™. All Rights Reserved.
+                © 2025 GenoCode™. All Rights Reserved.
             </div>
         </footer>
     );
