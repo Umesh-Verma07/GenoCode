@@ -10,7 +10,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'Online_Judge',
+      folder: 'GenoCode',
       allowedFormats: ["png", "jpg", "jpeg"]
     },
 });

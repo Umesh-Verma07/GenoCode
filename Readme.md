@@ -1,9 +1,9 @@
-# ‍⚖️ Online Judge
+# GenoCode
 
 ![Tech Stack](https://img.shields.io/badge/stack-React%20%2B%20Node.js%20%2B%20MongoDB-Informational)
 ![Status](https://img.shields.io/badge/status-In%20Development-yellow)
 
-Online Judge is a full-stack web application built to simulate competitive programming platforms like LeetCode, Codeforces, and HackerRank. It enables users to view problems, write and submit code in multiple languages, and get real-time verdicts (e.g., Accepted, WA, TLE).
+GenoCode is a full-stack web application built to simulate competitive programming platforms like LeetCode, Codeforces, and HackerRank. It enables users to view problems, write and submit code in multiple languages, and get real-time verdicts (e.g., Accepted, WA, TLE).
 
 > ⚠️ This project is under development—stay tuned for new features and enhancements!
 
@@ -38,7 +38,7 @@ Online Judge is a full-stack web application built to simulate competitive progr
 ## 🗂️ Project Structure
 
 ```
-OnlineJudge-main/
+GenoCode-main/
 ├── client/               # Frontend (React + Vite)
 │   ├── Dockerfile
 │   ├── package.json
@@ -109,8 +109,8 @@ The **compiler server** is a separate backend microservice responsible for secur
 
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/Umesh-Verma07/OnlineJudge.git
-   cd OnlineJudge
+   git clone https://github.com/Umesh-Verma07/GenoCode.git
+   cd GenoCode
    ```
 
 2. **Configure environment variables**  
@@ -146,15 +146,15 @@ Open three terminal windows/tabs:
 
 ```bash
 # Backend
-cd OnlineJudge/server
+cd GenoCode/server
 npm start
 
 # Compiler Service
-cd OnlineJudge/compiler
+cd GenoCode/compiler
 npm start
 
 # Frontend
-cd OnlineJudge/client
+cd GenoCode/client
 npm run dev
 ```
 

@@ -79,7 +79,7 @@ router.put('/update/:id', verifyJWT, upload.single('image'), async (req, res) =>
             const parts = user.image.split('/');
             const fileWithExt = parts[parts.length - 1];
             const publicId = fileWithExt.substring(0, fileWithExt.lastIndexOf('.'));
-            await cloudinary.uploader.destroy(`Online_Judge/${publicId}`);
+            await cloudinary.uploader.destroy(`GenoCode/${publicId}`);
             user.image = '';
         }
 

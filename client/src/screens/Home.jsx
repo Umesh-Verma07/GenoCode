@@ -13,7 +13,7 @@ export default function Home() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 70, duration: 0.7 }}
                 >
-                    Welcome to <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-yellow-400">OnlineJudge</span>
+                    Welcome to <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-yellow-400">GenoCode</span>
                 </motion.h1>
                 <motion.p
                     className="text-xl md:text-2xl text-indigo-800 mb-14 mt-2 text-center"
