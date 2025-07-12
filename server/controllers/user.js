@@ -2,11 +2,9 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { registerValidation } = require('../validators/authValidator');
 const cloudinary = require('cloudinary').v2;
-const multer = require('multer');
-const { storage } = require('../config/cloudinaryConfig');
-const upload = multer({ storage });
+const Submission = require('../models/Submission')
+const Problem = require('../models/Problem')
 
 
 // Register a new user
@@ -105,7 +103,7 @@ exports.getProfile = async (req, res) => {
     // If admin, list created problems; else list submissions
     const list = user.isAdmin ? await Problem.find({ email: user.email }) : await Submission.find({ email: user.email });
     
-    return res.json({ success: true, user, data: list });
+    return res.json({ success: true, user, problem: list });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }

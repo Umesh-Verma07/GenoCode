@@ -74,7 +74,7 @@ export default function ProblemPage() {
     })
     const json = await response.json();
     if (!json.success) {
-      setStdout(json.error.message || "Server error ....");
+      setStdout(json.error?.message || "Server error ....");
     } else {
       setStdout(json.output);
     }
@@ -101,7 +101,7 @@ export default function ProblemPage() {
         setStdout(json.error.message || "Server error ....");
       }
     } else {
-      setStdout(json.output);
+      setStdout(json.verdict);
     }
     setLoadingSubmit(false)
   };
