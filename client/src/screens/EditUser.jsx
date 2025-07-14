@@ -15,7 +15,6 @@ export default function EditProfile() {
     });
     const [userImage, setUserImage] = useState(null);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
