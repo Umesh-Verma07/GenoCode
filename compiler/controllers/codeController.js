@@ -1,6 +1,6 @@
 const asyncHandler = require('../middlewares/asyncHandler');
 const { writeCodeToFile } = require('../services/fileService');
-const { generateAIReview } = require('../services/reviewService');
+const generateAIReview = require('../services/reviewService');
 const { deleteFile } = require('../services/fileService');
 const { runQueue, submitQueue } = require('../config/queue');
 
@@ -16,7 +16,9 @@ exports.run = asyncHandler(async (req, res) => {
         result = await job.finished();
     } catch (err) {
         deleteFile(file);
-        return res.status(err.type === 'TLE' ? 408 : 400).json({ success: false, ...err });
+        const payload = { success: false, error: err.message || String(err), ...(err.type ? { type: err.type } : {})};
+        const status = err.type === 'TLE' ? 408 : 400;
+        return res.status(status).json(payload);
     }
     deleteFile(file);
     res.json({ success: true, output: result.stdout });
@@ -45,6 +47,7 @@ exports.submit = asyncHandler(async (req, res) => {
     } catch (err) {
         deleteFile(file);
         const status = err.type === 'WA' ? 200 : (err.type === 'TLE' ? 408 : 400);
-        return res.status(status).json({ success: false, ...err });
+        const payload = { success: false, error: err.message || String(err), ...(err.type ? { type: err.type } : {})};
+        return res.status(status).json(payload);
     }
 });
