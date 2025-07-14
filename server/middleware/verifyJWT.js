@@ -2,12 +2,11 @@ const jwt = require('jsonwebtoken');
 
 module.exports = function verifyJWT(req, res, next) {
   
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = req.headers.authorization;
+  if (!token) {
     return res.status(401).json({ success: false, error: 'Token missing or malformed' });
   }
 
-  const token = authHeader.split(' ')[1];
   try {
     // Verify and decode token
     const decoded = jwt.verify(token, process.env.JWTSECRET);
