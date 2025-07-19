@@ -6,7 +6,7 @@ export default function Home() {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen bg-gradient-to-br from-[#e3eafe] via-[#dde8fd] to-[#f7f8fa] flex flex-col items-center justify-center px-4 py-12">
+            <div className="min-h-screen bg-gradient-to-br from-[#e3eafe] via-[#dde8fd] to-[#f7f8fa] flex flex-col items-center justify-center px-4 py-12 navbar-spacing">
                 <motion.h1
                     className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-400 drop-shadow mb-2 text-center"
                     initial={{ y: -40, opacity: 0 }}

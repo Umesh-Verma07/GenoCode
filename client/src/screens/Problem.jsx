@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import Navbar from '../components/Navbar'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorAlert from '../components/ErrorAlert'
+import LoadingSkeleton from '../components/LoadingSkeleton'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import AIReviewPanel from '../components/AIReviewPanel'
@@ -19,6 +22,9 @@ export default function ProblemPage() {
   const [loadingRun, setLoadingRun] = useState(false)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [loadingReview, setLoadingReview] = useState(false)
+  const [loadingProblem, setLoadingProblem] = useState(true)
+  const [error, setError] = useState('')
+  const [showError, setShowError] = useState(true)
   const [reviewText, setReviewText] = useState('')
   const [showReviewPanel, setShowReviewPanel] = useState(false)
   const [selectedTab, setSelectedTab] = useState('Input')
@@ -43,42 +49,101 @@ export default function ProblemPage() {
   useEffect(() => {
     async function fetchProblem() {
       try {
+        setLoadingProblem(true);
         const response = await fetch(`${SERVER_URL}/problem/${id}`);
         const data = await response.json();
         if (!data.success) {
-          return new Error(data.error);
+          throw new Error(data.error);
         }
         setProblem(data.problem);
         setStdin(data.problem.testCases[0].input);
       } catch (e) {
-        return new Error(e.message);
+        setError(e.message);
+        setShowError(true);
+      } finally {
+        setLoadingProblem(false);
       }
     }
     fetchProblem();
-  }, []);
+  }, [id]);
+
+  if (loadingProblem) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-50 to-gray-100">
+        <Navbar />
+        <div className="flex flex-1 gap-6 px-4 pb-6 navbar-spacing mx-auto w-full">
+          <LoadingSkeleton type="problem" count={1} className="w-full md:w-[48%]" />
+          <LoadingSkeleton type="card" count={1} className="w-full md:w-1/2" />
+        </div>
+      </div>
+    );
+  }
 
   if (!problem) {
-    return <p className="p-8 text-center">No problem data found.</p>;
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-indigo-50 to-gray-100">
+        <Navbar />
+        <div className="flex flex-1 items-center justify-center navbar-spacing">
+          <ErrorAlert 
+            error={error || "Problem not found"} 
+            show={showError} 
+            onClose={() => setShowError(false)}
+            className="max-w-md"
+          />
+        </div>
+      </div>
+    );
   }
 
   const handleRun = async () => {
     setLoadingRun(true)
     setStdout('Running ....')
     setSelectedTab("Output")
-    const response = await fetch(`${COMPILER_URL}/run`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ code, language, input: stdin })
-    })
-    const json = await response.json();
-    if (!json.success) {
-      setStdout(json.error || "Server error ....");
-    } else {
-      setStdout(json.output);
+    
+    try {
+      const response = await fetch(`${COMPILER_URL}/run`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code, language, input: stdin })
+      })
+      
+      const json = await response.json();
+      
+      // Handle backend-specific error types (these are expected responses, not HTTP errors)
+      if (!json.success && json.type) {
+        switch (json.type) {
+          case 'TLE':
+            setStdout(`⏰ Time Limit Exceeded: ${json.error}`);
+            break;
+          case 'CE':
+            setStdout(`🔧 Compilation Error:\n${json.error}`);
+            break;
+          case 'RE':
+            setStdout(`💥 Runtime Error:\n${json.error}`);
+            break;
+          case 'WA':
+            setStdout(`❌ Wrong Answer: ${json.error}`);
+            break;
+          default:
+            setStdout(`❌ ${json.type}: ${json.error}`);
+        }
+      } else if (!json.success) {
+        setStdout(`❌ Error: ${json.error || "Server error occurred"}`);
+      } else {
+        setStdout(json.output);
+      }
+    } catch (error) {
+      console.error('Run error:', error);
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setStdout("❌ Error: Compiler service is not available. Please check if the server is running.");
+      } else {
+        setStdout(`❌ Error: ${error.message || "An unexpected error occurred"}`);
+      }
+    } finally {
+      setLoadingRun(false)
     }
-    setLoadingRun(false)
   };
 
   const handleSubmit = async () => {
@@ -88,53 +153,98 @@ export default function ProblemPage() {
     setStdout('Submitting ....')
     setLoadingSubmit(true)
     setSelectedTab("Output")
-    const response = await fetch(`${COMPILER_URL}/submit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code: code, language: language, email: localStorage.getItem("email"), problemId: id })
-    })
-    const json = await response.json();
-    if (!json.success) {
-      if (json.error) {
-        setStdout(json.error || "Server error ....");
+    
+    try {
+      const response = await fetch(`${COMPILER_URL}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: code, language: language, email: localStorage.getItem("email"), problemId: id })
+      })
+      
+      const json = await response.json();
+      
+      // Handle backend-specific error types (these are expected responses, not HTTP errors)
+      if (!json.success && json.type) {
+        switch (json.type) {
+          case 'TLE':
+            setStdout(`⏰ Time Limit Exceeded: ${json.error}`);
+            break;
+          case 'CE':
+            setStdout(`🔧 Compilation Error:\n${json.error}`);
+            break;
+          case 'RE':
+            setStdout(`💥 Runtime Error:\n${json.error}`);
+            break;
+          case 'WA':
+            setStdout(`❌ Wrong Answer: ${json.error}`);
+            break;
+          default:
+            setStdout(`❌ ${json.type}: ${json.error}`);
+        }
+      } else if (!json.success) {
+        setStdout(`❌ Error: ${json.error || "Server error occurred"}`);
+      } else {
+        setStdout(`✅ ${json.verdict}`);
       }
-    } else {
-      setStdout(json.verdict);
+    } catch (error) {
+      console.error('Submit error:', error);
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setStdout("❌ Error: Compiler service is not available. Please check if the server is running.");
+      } else {
+        setStdout(`❌ Error: ${error.message || "An unexpected error occurred"}`);
+      }
+    } finally {
+      setLoadingSubmit(false)
     }
-    setLoadingSubmit(false)
   };
   const handleReview = async () => {
     if (!localStorage.getItem("authToken")) {
       navigate('/login');
     }
     setLoadingReview(true)
-    const response = await fetch(`${COMPILER_URL}/review`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ code, problem: problem.description })
-    })
-    const json = await response.json();
-    if (!json.success) {
-      if (json.error) {
-        setReviewText(json.error.message || json.error);
-      } else {
-        setReviewText("Some error occurs ...");
+    
+    try {
+      const response = await fetch(`${COMPILER_URL}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code, problem: problem.description })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } else {
-      setReviewText(json.text);
+      
+      const json = await response.json();
+      if (!json.success) {
+        if (json.error) {
+          setReviewText(json.error.message || json.error);
+        } else {
+          setReviewText("Some error occurred while generating review");
+        }
+      } else {
+        setReviewText(json.text);
+      }
+    } catch (error) {
+      console.error('Review error:', error);
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setReviewText("❌ Error: AI Review service is not available. Please check if the server is running.");
+      } else {
+        setReviewText(`❌ Error: ${error.message || "An unexpected error occurred"}`);
+      }
+    } finally {
+      setLoadingReview(false)
     }
-    setLoadingReview(false)
   }
 
   return (
     <div className="flex flex-col min-h-screen scrollFix bg-gradient-to-br from-indigo-50 to-gray-100">
       <Navbar />
-      <div className="flex flex-1 gap-6 px-4 pb-6 pt-20 mx-auto w-full">
-        <aside className="w-full md:w-[48%] bg-white rounded-2xl shadow-lg border border-gray-100 p-6 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain">
+      <div className="flex flex-1 gap-6 px-4 pb-6 navbar-spacing mx-auto w-full">
+        <aside className="w-full md:w-[48%] bg-white rounded-2xl shadow-lg border border-gray-100 p-6 max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain">
           <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
           <div className="prose max-w-none text-gray-800 whitespace-pre-line">{problem.description}</div>
         </aside>
@@ -150,37 +260,31 @@ export default function ProblemPage() {
               </select>
             </div>
             <div className="flex space-x-2">
-              <button onClick={handleRun} disabled={loadingRun} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded transition">
+              <button onClick={handleRun} disabled={loadingRun} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded transition flex items-center">
                 {loadingRun ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
+                    <LoadingSpinner size="sm" color="gray" />
+                    <span className="ml-2">Running...</span>
                   </>
                 ) : (
                   "Run"
                 )}
               </button>
-              <button onClick={handleSubmit} disabled={loadingSubmit} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1 rounded" >
+              <button onClick={handleSubmit} disabled={loadingSubmit} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1 rounded flex items-center" >
                 {loadingSubmit ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
+                    <LoadingSpinner size="sm" color="white" />
+                    <span className="ml-2">Submitting...</span>
                   </>
                 ) : (
                   "Submit"
                 )}
               </button>
-              <button onClick={() => { handleReview(); setShowReviewPanel(true) }} disabled={loadingReview} className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded transition" >
+              <button onClick={() => { handleReview(); setShowReviewPanel(true) }} disabled={loadingReview} className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded transition flex items-center" >
                 {loadingReview ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
+                    <LoadingSpinner size="sm" color="white" />
+                    <span className="ml-2">Reviewing...</span>
                   </>
                 ) : (
                   "AI Review"

@@ -1,4 +1,7 @@
 import Navbar from '../components/Navbar';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorAlert from '../components/ErrorAlert';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -15,21 +18,28 @@ export default function EditProfile() {
     });
     const [userImage, setUserImage] = useState(null);
     const [error, setError] = useState('');
+    const [showError, setShowError] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [loadingProfile, setLoadingProfile] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
+                setLoadingProfile(true);
                 const res = await fetch(`${SERVER_URL}/user/${id}`);
                 const json = await res.json();
                 if (!json.success) throw new Error(json.error);
                 setUser({ ...json.user, skills: Array.isArray(json.user.skills) ? json.user.skills.join(', ') : "" });
             } catch (err) {
                 setError(err.message || "Failed to load profile.");
+                setShowError(true);
+            } finally {
+                setLoadingProfile(false);
             }
         };
         fetchUser();
-    }, []);
+    }, [id]);
 
     const onChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
@@ -44,7 +54,9 @@ export default function EditProfile() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         setError('');
+        setShowError(true);
         try {
             const formData = new FormData();
             formData.append('name', user.name);
@@ -71,16 +83,39 @@ export default function EditProfile() {
             navigate(-1);
         } catch (err) {
             setError(err.message || "Update failed");
+            setShowError(true);
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loadingProfile) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 navbar-spacing">
+                    <div className="w-full bg-white rounded-lg shadow border sm:max-w-sm xl:p-0">
+                        <div className="p-6 space-y-3 md:space-y-4 sm:p-6">
+                            <LoadingSkeleton type="card" count={1} />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
-            <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 mt-10">
-                <div className="w-full bg-white rounded-lg shadow border mt-10 sm:max-w-sm xl:p-0">
+            <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 navbar-spacing">
+                <div className="w-full bg-white rounded-lg shadow border sm:max-w-sm xl:p-0">
                     <div className="p-6 space-y-3 md:space-y-4 sm:p-6">
-                        {error && (<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>)}
+                        <ErrorAlert 
+                            error={error} 
+                            show={showError} 
+                            onClose={() => setShowError(false)}
+                            className="mb-4"
+                        />
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Edit Profile</h1>
                         <form onSubmit={handleSubmit} className="space-y-3 md:space-y-3" >
                             <div>
@@ -106,7 +141,20 @@ export default function EditProfile() {
                                 {user.image && (<img src={user.image} alt="Profile" className="mt-2 w-20 h-20 rounded-full object-cover" />)}
                                 <button type="button" onClick={() => { setUserImage(null); setUser(prev => ({ ...prev, image: "" })) }} className="text-xs text-red-500 underline ml-2">Remove Photo</button>
                             </div>
-                            <button type="submit" className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Update Profile</button>
+                            <button 
+                                type="submit" 
+                                disabled={loading}
+                                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center disabled:opacity-50"
+                            >
+                                {loading ? (
+                                    <>
+                                        <LoadingSpinner size="sm" color="white" />
+                                        <span className="ml-2">Updating...</span>
+                                    </>
+                                ) : (
+                                    "Update Profile"
+                                )}
+                            </button>
                             <button type="button" onClick={() => navigate(-1)} className="w-full text-gray-600 bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-2">Cancel</button>
                         </form>
                     </div>

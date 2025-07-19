@@ -1,5 +1,9 @@
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorAlert from '../components/ErrorAlert'
+import LoadingSkeleton from '../components/LoadingSkeleton'
+import EmptyState from '../components/EmptyState'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaSearch } from 'react-icons/fa'
@@ -12,6 +16,7 @@ export default function Practice() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showError, setShowError] = useState(true);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All');
   const [page, setPage] = useState(1);
@@ -25,6 +30,7 @@ export default function Practice() {
         setProblems(data.problem || []);
       } catch (err) {
         setError(err.message);
+        setShowError(true);
       } finally {
         setLoading(false);
       }
@@ -50,9 +56,17 @@ export default function Practice() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-16 px-1 sm:px-4 mt-10">
+      <main className="flex-grow px-1 sm:px-4 navbar-spacing">
         <div className="w-full max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-primary-700 mb-3 text-center">Practice Problems</h1>
+
+          {/* Error Alert */}
+          <ErrorAlert 
+            error={error} 
+            show={showError} 
+            onClose={() => setShowError(false)}
+            className="mb-4"
+          />
 
           {/* Filter Tabs */}
           <div className="flex justify-center gap-2 mb-4">
@@ -99,10 +113,19 @@ export default function Practice() {
 
           {/* Problems Table */}
           <div className="rounded-b-lg overflow-hidden shadow mb-6">
-            {loading && <p className="text-center py-6 bg-white">Loading problems...</p>}
-            {error && <p className="text-center text-red-600 bg-white py-6">Error: {error}</p>}
-            {currentProblems.length === 0 && !loading && (
-              <p className="text-center text-gray-400 bg-white py-6">No problems found.</p>
+            {loading && (
+              <div className="bg-white p-6">
+                <LoadingSkeleton type="table" count={1} />
+              </div>
+            )}
+            {currentProblems.length === 0 && !loading && !error && (
+              <div className="bg-white">
+                <EmptyState 
+                  type="problems"
+                  title="No problems found"
+                  description="Try adjusting your search or filter criteria."
+                />
+              </div>
             )}
             {currentProblems.map((p, idx) => (
               <div

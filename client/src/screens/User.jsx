@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorAlert from "../components/ErrorAlert";
+import LoadingSkeleton from "../components/LoadingSkeleton";
+import EmptyState from "../components/EmptyState";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 
@@ -15,37 +19,70 @@ export default function User() {
   const [medium, setMedium] = useState(0);
   const [hard, setHard] = useState(0);
   const [languages, setLanguages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showError, setShowError] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchUser() {
-      let response = await fetch(`${SERVER_URL}/user/${id}`);
-      response = await response.json();
-      if (!response.success) {
-        alert(response.error);
-        return;
+      try {
+        setLoading(true);
+        let response = await fetch(`${SERVER_URL}/user/${id}`);
+        response = await response.json();
+        if (!response.success) {
+          throw new Error(response.error);
+        }
+        setUser(response.user || {});
+        setSubmissions(response.problem || []);
+        const counts = {};
+        const lang = {};
+        (response.problem || []).forEach((sub) => {
+          const day = new Date(sub.date).toISOString().slice(0, 10);
+          counts[day] = (counts[day] || 0) + 1;
+          lang[sub.language] = (lang[sub.language] || 0) + 1;
+        });
+        setHeatmapData(Object.entries(counts).map(([date, count]) => ({ date, count })));
+        setLanguages(Object.entries(lang));
+        setEasy(response.problem.filter(sub => sub.level === "Easy").length);
+        setMedium(response.problem.filter(sub => sub.level === "Medium").length);
+        setHard(response.problem.filter(sub => sub.level === "Hard").length);
+      } catch (err) {
+        setError(err.message);
+        setShowError(true);
+      } finally {
+        setLoading(false);
       }
-      setUser(response.user || {});
-      setSubmissions(response.problem || []);
-      const counts = {};
-      const lang = {};
-      (response.problem || []).forEach((sub) => {
-        const day = new Date(sub.date).toISOString().slice(0, 10);
-        counts[day] = (counts[day] || 0) + 1;
-        lang[sub.language] = (lang[sub.language] || 0) + 1;
-      });
-      setHeatmapData(Object.entries(counts).map(([date, count]) => ({ date, count })));
-      setLanguages(Object.entries(lang));
-      setEasy(response.problem.filter(sub => sub.level === "Easy").length);
-      setMedium(response.problem.filter(sub => sub.level === "Medium").length);
-      setHard(response.problem.filter(sub => sub.level === "Hard").length);
     }
     fetchUser();
   }, [id]);
 
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Navbar />
+        <div className="flex flex-1 flex-col md:flex-row max-w-6xl mx-auto w-full navbar-spacing p-4 md:gap-6">
+          <LoadingSkeleton type="profile" count={1} className="w-full md:w-80" />
+          <div className="flex-1 flex flex-col gap-6">
+            <LoadingSkeleton type="card" count={2} />
+            <LoadingSkeleton type="card" count={1} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="text-gray-400">Loading profile...</span>
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Navbar />
+        <div className="flex flex-1 items-center justify-center navbar-spacing">
+          <ErrorAlert 
+            error={error || "User not found"} 
+            show={showError} 
+            onClose={() => setShowError(false)}
+            className="max-w-md"
+          />
+        </div>
       </div>
     );
   }
@@ -53,9 +90,16 @@ export default function User() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
 
-      <div className="flex flex-1 flex-col md:flex-row max-w-6xl mx-auto w-full mt-16 p-4 md:gap-6">
+      <div className="flex flex-1 flex-col md:flex-row max-w-6xl mx-auto w-full p-4 md:gap-6 navbar-spacing">
+        {/* Error Alert */}
+        <ErrorAlert 
+          error={error} 
+          show={showError} 
+          onClose={() => setShowError(false)}
+          className="mb-4"
+        />
         {/* Sidebar */}
-        <aside className="w-full md:w-80 bg-white rounded-2xl shadow p-6 flex flex-col items-center mb-5 md:mb-0 h-[520px] md:h-[calc(100vh-95px)] overflow-auto sticky top-20">
+                  <aside className="w-full md:w-80 bg-white rounded-2xl shadow p-6 flex flex-col items-center mb-5 md:mb-0 h-[520px] md:h-[calc(100vh-95px)] overflow-auto sticky sticky-top">
           <img src={user.image || "/avatar-placeholder.png"} alt={user.name} className="w-24 h-24 rounded-full border shadow mb-3" />
           <h2 className="text-2xl font-bold">{user.name}</h2>
           <div className="text-sm text-gray-600 mb-1">@{user.username}</div>
@@ -169,7 +213,19 @@ export default function User() {
             <div className="bg-white rounded-2xl shadow p-6">
               <h3 className="text-xl font-semibold mb-4">My Problems</h3>
               {submissions.length === 0 ? (
-                <p>No problem added yet</p>
+                <EmptyState 
+                  type="problems"
+                  title="No problems created"
+                  description="You haven't created any problems yet."
+                  action={
+                    <button 
+                      onClick={() => navigate('/create')}
+                      className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition"
+                    >
+                      Create Problem
+                    </button>
+                  }
+                />
               ) : (
                 <ul className="divide-y">
                   {submissions.map((problem) => (
@@ -189,7 +245,19 @@ export default function User() {
             <div className="bg-white rounded-2xl shadow p-6">
               <h3 className="text-xl font-semibold mb-4">Recent Submissions</h3>
               {submissions.length === 0 ? (
-                <p>No submissions yet.</p>
+                <EmptyState 
+                  type="problems"
+                  title="No submissions yet"
+                  description="Start solving problems to see your submission history."
+                  action={
+                    <button 
+                      onClick={() => navigate('/practice')}
+                      className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition"
+                    >
+                      Start Practicing
+                    </button>
+                  }
+                />
               ) : (
                 <ul className="divide-y">
                   {submissions.slice().reverse().map((sub) => (

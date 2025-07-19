@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorAlert from '../components/ErrorAlert';
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function CreateProblem() {
@@ -13,6 +15,8 @@ export default function CreateProblem() {
     const [level, setLevel] = useState('');
     const [testCases, setTestCases] = useState([{ input: '', output: '' }]);
     const [error, setError] = useState('');
+    const [showError, setShowError] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (problem) {
@@ -40,6 +44,10 @@ export default function CreateProblem() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
+        setShowError(true);
+        
         const problemData = { title, description, level, testCases};
         try {
             const response = await fetch(`${SERVER_URL}/problem/update/${problem._id}`, {
@@ -59,21 +67,25 @@ export default function CreateProblem() {
         } catch (e) {
             console.error(e);
             setError(e.message);
+            setShowError(true);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Navbar />
-            <main className="flex-grow container mx-auto mt-16 px-4 py-7">
+            <main className="flex-grow container mx-auto navbar-spacing px-4 py-7">
                 <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
                     <h1 className="text-2xl font-bold mb-4">{title}</h1>
 
-                    {error && (
-                        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                            {error}
-                        </div>
-                    )}
+                    <ErrorAlert 
+                        error={error} 
+                        show={showError} 
+                        onClose={() => setShowError(false)}
+                        className="mb-4"
+                    />
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
@@ -115,7 +127,20 @@ export default function CreateProblem() {
                                 </div>
                             ))}
                         </div>
-                        <button type="submit" className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition" > Update </button>
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition flex items-center justify-center disabled:opacity-50" 
+                        >
+                            {loading ? (
+                                <>
+                                    <LoadingSpinner size="sm" color="white" />
+                                    <span className="ml-2">Updating...</span>
+                                </>
+                            ) : (
+                                "Update"
+                            )}
+                        </button>
                     </form>
                 </div>
             </main>
