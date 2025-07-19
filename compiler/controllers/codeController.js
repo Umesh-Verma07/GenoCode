@@ -2,26 +2,24 @@ const asyncHandler = require('../middlewares/asyncHandler');
 const { writeCodeToFile } = require('../services/fileService');
 const generateAIReview = require('../services/reviewService');
 const { deleteFile } = require('../services/fileService');
-const { runQueue, submitQueue } = require('../config/queue');
+const { runCode } = require('../services/executionService');
+const { checkAndSubmit } = require('../services/submissionService');
 
 exports.run = asyncHandler(async (req, res) => {
     const { code, language, input } = req.body;
     if (!code) return res.status(400).json({ success: false, error: 'Empty code body' });
 
     const file = writeCodeToFile(code, language);
-    const job = await runQueue.add({ file, language, input });
-    
-    let result;
     try {
-        result = await job.finished();
+        const stdout = await runCode(file, language, input);
+        deleteFile(file);
+        res.json({ success: true, output: stdout });
     } catch (err) {
         deleteFile(file);
         const payload = { success: false, error: err.message || String(err), ...(err.type ? { type: err.type } : {})};
         const status = err.type === 'TLE' ? 408 : 400;
         return res.status(status).json(payload);
     }
-    deleteFile(file);
-    res.json({ success: true, output: result.stdout });
 });
 
 exports.review = asyncHandler(async (req, res) => {
@@ -37,11 +35,8 @@ exports.submit = asyncHandler(async (req, res) => {
     if (!code) return res.status(400).json({ success: false, error: 'Empty code body' });
 
     const file = writeCodeToFile(code, language);
-
-    const job = await submitQueue.add({ file, code, language, problemId, email });
-
     try {
-        const verdict = await job.finished();
+        const verdict = await checkAndSubmit(file, code, language, problemId, email);
         deleteFile(file);
         return res.json({ success: true, verdict });
     } catch (err) {
