@@ -265,12 +265,12 @@ export default function ProblemPage() {
   return (
     <div className="flex flex-col min-h-screen scrollFix bg-gradient-to-br from-indigo-50 to-gray-100">
       <Navbar />
-      <div className="flex flex-1 gap-6 px-4 pb-6 navbar-spacing mx-auto w-full">
-        <aside className="w-full md:w-[48%] bg-white rounded-2xl shadow-lg border border-gray-100 p-6 max-h-[calc(100vh-120px)] overflow-y-auto overscroll-contain">
+      <div className="flex flex-1 gap-6 px-4 navbar-spacing mx-auto w-full">
+        <aside className="w-full md:w-[50%] bg-white rounded-2xl shadow-lg border border-gray-100 p-6 max-h-[calc(100vh-6rem)] overflow-y-auto overscroll-contain">
           <h1 className="text-2xl font-bold mb-4">{problem.title}</h1>
           <div className="prose max-w-none text-gray-800 whitespace-pre-line">{problem.description}</div>
         </aside>
-        <div className="w-full md:w-1/2 flex flex-col">
+        <div className="w-full md:w-[50%] flex flex-col">
           <div className="flex items-center justify-between p-2 rounded-t-xl border-b border-gray-200 bg-white">
             <div className="flex items-center space-x-2">
               <label htmlFor="lang" className="font-semibold text-gray-700"> Language </label>
@@ -335,12 +335,14 @@ export default function ProblemPage() {
               </button>
             ))}
           </div>
-          <div className="flex-1 overflow-auto p-4 bg-white rounded-b-xl">
+          <div className="flex-1 p-4 mb-3 bg-white rounded-b-xl">
             {selectedTab === 'Input' && (
-              <textarea className="w-full h-full p-2 font-mono text-sm border rounded" value={stdin} onChange={e => setStdin(e.target.value)} />
+              <textarea className="w-full h-32 p-2 mt-2 font-mono text-sm border rounded resize-none" value={stdin} onChange={e => setStdin(e.target.value)} />
             )}
             {selectedTab === 'Output' && (
-              <pre className="w-full h-full p-2 bg-black text-green-200 font-mono text-sm rounded overflow-auto" style={{ height: "146px" }}>{stdout}</pre>
+              <div className="w-full h-32 mt-2 bg-black rounded overflow-hidden">
+                <pre className="w-full h-full p-2 text-green-200 font-mono text-sm rounded overflow-auto">{stdout}</pre>
+              </div>
             )}
           </div>
         </div>
