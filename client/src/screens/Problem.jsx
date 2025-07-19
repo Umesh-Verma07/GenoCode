@@ -23,6 +23,7 @@ export default function ProblemPage() {
   const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [loadingReview, setLoadingReview] = useState(false)
   const [loadingProblem, setLoadingProblem] = useState(true)
+
   const [error, setError] = useState('')
   const [showError, setShowError] = useState(true)
   const [reviewText, setReviewText] = useState('')
@@ -35,7 +36,12 @@ export default function ProblemPage() {
 
   useEffect(() => {
     const draft = localStorage.getItem(codeKey);
-    if (draft != null) setCode(draft);
+    if (draft != null) {
+      setCode(draft);
+    } else {
+      // If no saved code exists for this language, load template
+      loadTemplate(language);
+    }
   }, [id, language]);
 
   useEffect(() => {
@@ -45,6 +51,22 @@ export default function ProblemPage() {
     }
     localStorage.setItem(codeKey, code);
   }, [code, language]);
+
+  // Function to load template for selected language
+  const loadTemplate = async (lang) => {
+    try {
+      const response = await fetch(`/templates/${lang}.txt`);
+      if (response.ok) {
+        const template = await response.text();
+        setCode(template);
+        localStorage.setItem(codeKey, template);
+      } else {
+        console.warn(`Template for ${lang} not found`);
+      }
+    } catch (error) {
+      console.error('Error loading template:', error);
+    }
+  };
 
   useEffect(() => {
     async function fetchProblem() {
@@ -252,12 +274,24 @@ export default function ProblemPage() {
           <div className="flex items-center justify-between p-2 rounded-t-xl border-b border-gray-200 bg-white">
             <div className="flex items-center space-x-2">
               <label htmlFor="lang" className="font-semibold text-gray-700"> Language </label>
-              <select id="lang" value={language} onChange={e => setLanguage(e.target.value)} className="border rounded px-2 py-1 focus:ring-primary-400 focus:border-primary-400">
+              <select 
+                id="lang" 
+                value={language} 
+                onChange={e => setLanguage(e.target.value)} 
+                className="border rounded px-2 py-1 focus:ring-primary-400 focus:border-primary-400"
+              >
                 <option value="cpp">C++</option>
                 <option value="java">Java</option>
                 <option value="py">Python</option>
                 <option value="js">JavaScript</option>
               </select>
+              <button 
+                onClick={() => loadTemplate(language)}
+                className="bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1 rounded text-sm transition"
+                title="Reset to template"
+              >
+                🔄 Reset
+              </button>
             </div>
             <div className="flex space-x-2">
               <button onClick={handleRun} disabled={loadingRun} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-1 rounded transition flex items-center">
