@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 export default function () {
 
     const navigate = useNavigate();
-    const location = useLocation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef();
 
