@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 export default function Register() {
@@ -12,6 +12,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
 
   let navigate = useNavigate();
+  const location = useLocation();
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -36,7 +37,9 @@ export default function Register() {
       if (!json.success) {
         throw new Error(json.error[0].msg);
       }
-      navigate('/login');
+      // Redirect back to where the user came from, or to login if no redirect location
+      const from = location.state?.from || '/login';
+      navigate(from);
     } catch (err) {
       setError(err.message);
       setShowError(true);
@@ -93,7 +96,7 @@ export default function Register() {
                   )}
                 </button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Already have an account? <a href="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</a>
+                  Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</Link>
                 </p>
               </form>
             </div>

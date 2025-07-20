@@ -3,7 +3,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorAlert from '../components/ErrorAlert'
 import { jwtDecode } from 'jwt-decode'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 const SERVER_URL = import.meta.env.VITE_SERVER_URL
 
 export default function Login() {
@@ -14,6 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   let navigate = useNavigate();
+  const location = useLocation();
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -46,7 +47,10 @@ export default function Login() {
       if(token.image){
         localStorage.setItem("userImage", token.image)
       }
-      navigate('/');
+      
+      // Redirect back to where the user came from, or to home if no redirect location
+      const from = location.state?.from || '/';
+      navigate(from);
     } catch (err) {
       setError(err.message);
       setShowError(true);
@@ -93,7 +97,7 @@ export default function Login() {
                   )}
                 </button>
                 <p className="text-sm font-light text-gray-500">
-                  Don't have an account? <a href="/register" className="font-medium text-primary-600 hover:underline">Register</a>
+                  Don't have an account? <Link to="/register" className="font-medium text-primary-600 hover:underline">Register</Link>
                 </p>
               </form>
             </div>

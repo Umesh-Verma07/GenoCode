@@ -170,7 +170,8 @@ export default function ProblemPage() {
 
   const handleSubmit = async () => {
     if (!localStorage.getItem("authToken")) {
-      navigate('/login');
+      navigate('/login', { state: { from: `/problem/${id}` } });
+      return;
     }
     setStdout('Submitting ....')
     setLoadingSubmit(true)
@@ -223,7 +224,8 @@ export default function ProblemPage() {
   };
   const handleReview = async () => {
     if (!localStorage.getItem("authToken")) {
-      navigate('/login');
+      navigate('/login', { state: { from: `/problem/${id}` } });
+      return;
     }
     setLoadingReview(true)
     

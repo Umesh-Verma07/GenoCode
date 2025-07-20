@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import EmptyState from "../components/EmptyState";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, X, CheckCircle } from "lucide-react";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -22,7 +23,12 @@ export default function User() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [problemToDelete, setProblemToDelete] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -55,6 +61,51 @@ export default function User() {
     }
     fetchUser();
   }, [id]);
+
+  const handleDeleteClick = (problem) => {
+    setProblemToDelete(problem);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!problemToDelete) return;
+
+    try {
+      const response = await fetch(`${SERVER_URL}/problem/delete/${problemToDelete._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('authToken')
+        },
+        body: JSON.stringify({ email: user.email })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Remove the problem from the local state
+        setSubmissions(prev => prev.filter(problem => problem._id !== problemToDelete._id));
+        // Show success message
+        setSuccessMessage('Problem deleted successfully!');
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        setError(data.error || 'Failed to delete problem');
+        setShowError(true);
+      }
+    } catch (error) {
+      setError('Failed to delete problem. Please try again.');
+      setShowError(true);
+    } finally {
+      setShowDeleteConfirm(false);
+      setProblemToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setProblemToDelete(null);
+  };
 
   if (loading) {
     return (
@@ -219,7 +270,7 @@ export default function User() {
                   description="You haven't created any problems yet."
                   action={
                     <button 
-                      onClick={() => navigate('/create')}
+                      onClick={() => navigate('/create', { state: { from: `/user/${id}` } })}
                       className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition"
                     >
                       Create Problem
@@ -234,7 +285,7 @@ export default function User() {
                       <div className="text-primary-600 hover:underline text-sm">
                         <button onClick={() => navigate(`/problem/${problem._id}`)} className="text-primary-600 btn mx-2 hover:underline">View</button>
                         <button onClick={() => navigate(`/update/${problem._id}`, { state: { data : {problem, userId: user.username }} })} className="text-primary-600 hover:underline text-sm">Update</button>
-                        <button onClick={() => handleDelete(problem._id)} className="text-red-600 hover:underline text-sm ml-2">Delete</button>
+                        <button onClick={() => handleDeleteClick(problem)} className="text-red-600 hover:underline text-sm ml-2">Delete</button>
                       </div>
                     </li>
                   ))}
@@ -272,6 +323,96 @@ export default function User() {
           }
         </main>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete Problem</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Are you sure you want to delete "{problemToDelete?.title}"?
+                  </p>
+                </div>
+                <button
+                  onClick={handleDeleteCancel}
+                  className="flex-shrink-0 p-1 hover:bg-gray-100 rounded-full transition"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+                <p className="text-sm text-red-700">
+                  This action cannot be undone. The problem and all its test cases will be permanently deleted.
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={handleDeleteCancel}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition flex items-center gap-2"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                  Delete Problem
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Notification */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed top-4 right-4 z-50 max-w-sm w-full"
+          >
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-green-800">
+                    {successMessage}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowSuccess(false)}
+                  className="flex-shrink-0 p-1 hover:bg-green-100 rounded-full transition"
+                >
+                  <X className="w-4 h-4 text-green-600" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

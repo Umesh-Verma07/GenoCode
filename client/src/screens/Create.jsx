@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorAlert from '../components/ErrorAlert';
@@ -14,6 +14,7 @@ export default function CreateProblem() {
   const [showError, setShowError] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChangeCase = (idx, field, value) => {
     const updated = [...testCases];
@@ -50,7 +51,10 @@ export default function CreateProblem() {
       if (!json.success){
         throw new Error(json.error);
       }
-      navigate('/');
+      
+      // Redirect back to where the user came from
+      const from = location.state?.from || '/practice';
+      navigate(from);
     } catch (e) {
       console.error(e);
       setError(e.message);

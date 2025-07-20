@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { FaCode, FaTrophy } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Home() {
+    const navigate = useNavigate();
+    
     return (
         <>
             <Navbar />
@@ -29,7 +32,7 @@ export default function Home() {
                         whileHover={{ scale: 1.07, y: -7, boxShadow: "0 8px 32px rgba(63,81,181,0.15)" }}
                         whileTap={{ scale: 0.98 }}
                         className="cursor-pointer glass-card bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center p-10 group border border-indigo-100 hover:border-indigo-400 transition-all duration-200"
-                        onClick={() => (window.location.href = "/practice")}
+                        onClick={() => navigate("/practice")}
                     >
                         <motion.div
                             animate={{ rotate: [0, 8, -8, 0] }}
@@ -50,7 +53,7 @@ export default function Home() {
                         whileHover={{ scale: 1.07, y: -7, boxShadow: "0 8px 32px rgba(251,191,36,0.14)" }}
                         whileTap={{ scale: 0.98 }}
                         className="cursor-pointer glass-card bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center p-10 group border border-yellow-100 hover:border-yellow-400 transition-all duration-200"
-                        onClick={() => (window.location.href = "/")}
+                        onClick={() => navigate("/contest")}
                     >
                         <motion.div
                             animate={{ rotate: [0, -10, 10, 0] }}
