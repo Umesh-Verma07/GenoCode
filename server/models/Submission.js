@@ -12,7 +12,8 @@ const submissionSchema = new Schema({
     },
     email:{
         type: String,
-        required: true
+        required: true,
+        index : true
     },
     code:{
         type: String,
