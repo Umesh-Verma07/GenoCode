@@ -1,6 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-1: #f6f7ff;
+  --bg-2: #eef1ff;
+  --ink-1: #121434;
+  --ink-2: #3b3f76;
+  --brand-1: #2e4bc7;
+  --brand-2: #0e2a7b;
+  --accent: #ff7a18;
+  --card-border: rgba(38, 56, 138, 0.16);
+}
+
+.dark {
+  --bg-1: #090d20;
+  --bg-2: #121a35;
+  --ink-1: #e9eeff;
+  --ink-2: #bcc7ee;
+  --brand-1: #7f9bff;
+  --brand-2: #4f72ec;
+  --accent: #ff9a4f;
+  --card-border: rgba(143, 162, 239, 0.22);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--ink-1);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 154, 71, 0.18), transparent 30%),
+    radial-gradient(circle at 92% 18%, rgba(49, 76, 198, 0.15), transparent 28%),
+    linear-gradient(130deg, var(--bg-1), var(--bg-2));
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 167, 96, 0.14), transparent 30%),
+    radial-gradient(circle at 92% 18%, rgba(88, 118, 242, 0.15), transparent 30%),
+    linear-gradient(130deg, var(--bg-1), var(--bg-2));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(46, 75, 199, 0.25);
+}
 
 /* Custom scrollbar styles */
 .custom-scroll::-webkit-scrollbar {
@@ -8,21 +73,25 @@
 }
 
 .custom-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(202, 209, 238, 0.35);
   border-radius: 3px;
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: rgba(95, 118, 218, 0.48);
   border-radius: 3px;
 }
 
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: rgba(67, 92, 192, 0.6);
 }
 
-/* Smooth transitions for all interactive elements */
-* {
+/* Keep transitions targeted to interactive controls for better performance */
+button,
+a,
+input,
+select,
+textarea {
   transition: all 0.2s ease-in-out;
 }
 
@@ -42,8 +111,28 @@
 
 /* Glass card effect */
 .glass-card {
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 16px 36px rgba(31, 48, 125, 0.12);
+  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .glass-card {
+  background: rgba(17, 27, 59, 0.68);
+  box-shadow: 0 14px 34px rgba(3, 8, 25, 0.48);
+}
+
+.soft-surface {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(26, 43, 123, 0.1);
+  box-shadow: 0 12px 30px rgba(28, 44, 124, 0.1);
+}
+
+.dark .soft-surface {
+  background: rgba(16, 25, 52, 0.78);
+  border: 1px solid rgba(136, 159, 241, 0.2);
+  box-shadow: 0 10px 30px rgba(2, 8, 25, 0.48);
 }
 
 /* Custom button hover effects */
@@ -74,26 +163,26 @@
 
 /* Navbar spacing utilities */
 .navbar-spacing {
-  padding-top: 88px; /* 64px navbar height + 24px extra spacing */
+  padding-top: 102px;
 }
 
 .navbar-spacing-sm {
-  padding-top: 72px;
+  padding-top: 88px;
 }
 
 .navbar-spacing-lg {
-  padding-top: 104px;
+  padding-top: 120px;
 }
 
 /* Ensure content doesn't go behind fixed navbar */
 .main-content {
-  min-height: calc(100vh - 88px);
-  padding-top: 88px;
+  min-height: calc(100vh - 102px);
+  padding-top: 102px;
 }
 
 /* Fix for sticky elements */
 .sticky-top {
-  top: 88px;
+  top: 102px;
 }
 
 /* Output formatting */

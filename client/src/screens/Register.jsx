@@ -49,60 +49,72 @@ export default function Register() {
   }
 
   return (
-    <>
-      <div className="flex flex-col min-h-screen">
-        <div><Navbar /></div>
-        <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 py-20 navbar-spacing">
-          <div className="w-full bg-white rounded-lg shadow border sm:max-w-sm xl:p-0">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-
-              <ErrorAlert 
-                error={error} 
-                show={showError} 
-                onClose={() => setShowError(false)}
-                className="mb-4"
-              />
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Create an account</h1>
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                <div>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                  <input type="text" name="name" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Enter your name" required />
-                </div>
-                <div>
-                  <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900">Username</label>
-                  <input type="text" name="username" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Enter a unique username" required />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                  <input type="email" name="email" onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@company.com" required />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                  <input type="password" name="password" onChange={onChange} placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required="" />
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <LoadingSpinner size="sm" color="white" />
-                      <span className="ml-2">Creating account...</span>
-                    </>
-                  ) : (
-                    "Create an account"
-                  )}
-                </button>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Already have an account? <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login</Link>
-                </p>
-              </form>
+    <div className="flex flex-col min-h-screen">
+      <div><Navbar /></div>
+      <section className="flex-grow flex items-start justify-center px-4 sm:px-6 py-10 navbar-spacing">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-2 rounded-3xl bg-gradient-to-br from-orange-500 via-orange-500 to-orange-600 text-white p-8 sm:p-10 shadow-2xl">
+            <p className="text-xs uppercase tracking-widest text-white/80">Get Started</p>
+            <h1 className="text-4xl font-bold leading-tight mt-3">Create your coding identity.</h1>
+            <p className="text-white/85 mt-4 leading-relaxed">
+              Build your profile, solve consistently, and start climbing through practice and contests.
+            </p>
+            <div className="mt-8 space-y-3 text-sm text-white/90">
+              <p>Track your progress</p>
+              <p>Personalized profile</p>
+              <p>Ready for competitive coding</p>
             </div>
           </div>
-        </section>
-      </div>
-    </>
+
+          <div className="lg:col-span-3 glass-card rounded-3xl p-6 sm:p-8">
+            <ErrorAlert
+              error={error}
+              show={showError}
+              onClose={() => setShowError(false)}
+              className="mb-4"
+            />
+            <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 dark:text-slate-100">Create an account</h2>
+            <p className="text-primary-900/70 dark:text-slate-300 mt-2 mb-6">Join GenoCode and start solving today.</p>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label htmlFor="name" className="block mb-2 text-sm font-semibold text-primary-900 dark:text-slate-100">Name</label>
+                <input type="text" name="name" onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 block w-full p-3" placeholder="Enter your name" required />
+              </div>
+              <div>
+                <label htmlFor="username" className="block mb-2 text-sm font-semibold text-primary-900 dark:text-slate-100">Username</label>
+                <input type="text" name="username" onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 block w-full p-3" placeholder="Enter a unique username" required />
+              </div>
+              <div>
+                <label htmlFor="email" className="block mb-2 text-sm font-semibold text-primary-900 dark:text-slate-100">Email</label>
+                <input type="email" name="email" onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 block w-full p-3" placeholder="name@company.com" required />
+              </div>
+              <div>
+                <label htmlFor="password" className="block mb-2 text-sm font-semibold text-primary-900 dark:text-slate-100">Password</label>
+                <input type="password" name="password" onChange={onChange} placeholder="••••••••" className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 block w-full p-3" required />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full text-white bg-primary-700 hover:bg-primary-800 font-semibold rounded-xl text-sm px-5 py-3 text-center flex items-center justify-center disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <LoadingSpinner size="sm" color="white" />
+                    <span className="ml-2">Creating account...</span>
+                  </>
+                ) : (
+                  "Create an account"
+                )}
+              </button>
+              <p className="text-sm text-primary-900/80 dark:text-slate-300">
+                Already have an account? <Link to="/login" className="font-semibold text-primary-700 dark:text-indigo-300 hover:underline">Login</Link>
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

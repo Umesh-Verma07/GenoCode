@@ -9,6 +9,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+INTERVIEW_PREPARATION_GUIDE.md
+
 DemoUser.jsx
 inputs
 codes

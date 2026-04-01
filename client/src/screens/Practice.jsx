@@ -14,20 +14,36 @@ const PAGE_SIZE = 15;
 export default function Practice() {
   const navigate = useNavigate();
   const [problems, setProblems] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(true);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All');
   const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(searchInput.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     async function fetchProblem() {
       try {
-        const response = await fetch(`${SERVER_URL}/problem/list`);
+        setLoading(true);
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(PAGE_SIZE),
+          level: filter,
+          search: query,
+          sort: 'newest',
+        });
+        const response = await fetch(`${SERVER_URL}/problem/list?${params.toString()}`);
         const data = await response.json();
         if (!data.success) throw new Error('Failed to fetch problems');
         setProblems(data.problem || []);
+        setTotalPages(data.totalPages || 1);
       } catch (err) {
         setError(err.message);
         setShowError(true);
@@ -36,31 +52,28 @@ export default function Practice() {
       }
     }
     fetchProblem();
-  }, []);
-
-  const filteredProblems = problems.filter((p) =>
-    (filter === 'All' || p.level === filter) &&
-    p.title.toLowerCase().includes(query.toLowerCase())
-  );
-  const totalPages = Math.ceil(filteredProblems.length / PAGE_SIZE);
-  const currentProblems = filteredProblems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  }, [page, filter, query]);
 
   useEffect(() => { setPage(1) }, [filter, query]);
 
   const getDiff = (level) => {
-    if (level === 'Easy') return "text-green-500 font-semibold";
-    if (level === 'Medium') return "text-yellow-500 font-semibold";
-    return "text-red-500 font-semibold";
+    if (level === 'Easy') return "text-emerald-700 bg-emerald-100 border-emerald-200";
+    if (level === 'Medium') return "text-amber-700 bg-amber-100 border-amber-200";
+    return "text-rose-700 bg-rose-100 border-rose-200";
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow px-1 sm:px-4 navbar-spacing">
-        <div className="w-full max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-primary-700 mb-3 text-center">Practice Problems</h1>
+      <main className="flex-grow px-4 sm:px-6 navbar-spacing pb-10">
+        <div className="w-full max-w-6xl mx-auto">
+          <section className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-700 text-white shadow-2xl mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold">Practice Problems</h1>
+            <p className="text-white/80 mt-2 max-w-2xl">
+              Pick a difficulty, search instantly, and jump straight into solving.
+            </p>
+          </section>
 
-          {/* Error Alert */}
           <ErrorAlert 
             error={error} 
             show={showError} 
@@ -68,58 +81,50 @@ export default function Practice() {
             className="mb-4"
           />
 
-          {/* Filter Tabs */}
-          <div className="flex justify-center gap-2 mb-4">
+          <section className="glass-card rounded-2xl p-4 sm:p-5 mb-5">
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
             {["All", "Easy", "Medium", "Hard"].map(level => (
               <button
                 key={level}
                 className={`
-                  px-4 py-1.5 rounded-full text-sm font-semibold transition
+                  px-4 py-2 rounded-full text-sm font-semibold transition border
                   ${filter === level ? (
-                    level === "Easy" ? "bg-green-500 text-white shadow" :
-                      level === "Medium" ? "bg-yellow-400 text-white shadow" :
-                        level === "Hard" ? "bg-red-500 text-white shadow" :
-                          "bg-primary-600 text-white shadow"
-                  ) : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-200"}
+                    level === "Easy" ? "bg-emerald-500 text-white border-emerald-500 shadow" :
+                      level === "Medium" ? "bg-amber-500 text-white border-amber-500 shadow" :
+                        level === "Hard" ? "bg-rose-500 text-white border-rose-500 shadow" :
+                          "bg-primary-600 text-white border-primary-600 shadow"
+                  ) : "bg-white dark:bg-slate-900 text-primary-800 dark:text-slate-200 border-primary-100 dark:border-indigo-200/20 hover:bg-primary-50 dark:hover:bg-slate-800"}
                 `}
                 onClick={() => setFilter(level)}
               >{level}</button>
             ))}
-          </div>
+            </div>
 
-          {/* Search Bar */}
-          <div className="flex items-center mb-5 bg-white rounded-lg shadow px-3 py-2 w-full max-w-lg mx-auto border border-gray-200">
-            <FaSearch className="text-gray-400 mr-2" />
-            <input
-              className="flex-1 outline-none bg-transparent text-gray-700"
-              type="text"
-              placeholder="Search problems..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
+            <div className="flex items-center bg-white/80 dark:bg-slate-900/80 rounded-xl px-4 py-3 w-full max-w-xl mx-auto border border-primary-100 dark:border-indigo-200/20 shadow-sm">
+              <FaSearch className="text-primary-500 mr-3" />
+              <input
+                className="flex-1 outline-none bg-transparent text-primary-900 dark:text-slate-100 placeholder:text-primary-700/60 dark:placeholder:text-slate-400"
+                type="text"
+                placeholder="Search problems by title..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </div>
+          </section>
 
-          {/* Table Headers */}
-          <div className="
-            bg-gray-50 rounded-t-lg shadow text-sm text-gray-500 font-semibold
-            px-2 py-2 grid
-            grid-cols-[56px_1fr_90px]
-            mb-0
-          ">
-            <div className="text-center">#</div>
-            <div className="pl-2">Title</div>
-            <div className="text-right pr-2">Level</div>
-          </div>
-
-          {/* Problems Table */}
-          <div className="rounded-b-lg overflow-hidden shadow mb-6">
+          <div className="soft-surface rounded-2xl overflow-hidden mb-6 border border-primary-100 dark:border-indigo-200/20">
+            <div className="bg-primary-50 dark:bg-slate-900 text-sm text-primary-800/80 dark:text-slate-300 font-semibold px-3 py-3 grid grid-cols-[60px_1fr_110px]">
+              <div className="text-center">#</div>
+              <div className="pl-2">Title</div>
+              <div className="text-right pr-2">Level</div>
+            </div>
             {loading && (
-              <div className="bg-white p-6">
+              <div className="bg-white/80 dark:bg-slate-900/70 p-6">
                 <LoadingSkeleton type="table" count={1} />
               </div>
             )}
-            {currentProblems.length === 0 && !loading && !error && (
-              <div className="bg-white">
+            {problems.length === 0 && !loading && !error && (
+              <div className="bg-white/80 dark:bg-slate-900/70">
                 <EmptyState 
                   type="problems"
                   title="No problems found"
@@ -127,33 +132,33 @@ export default function Practice() {
                 />
               </div>
             )}
-            {currentProblems.map((p, idx) => (
+            {problems.map((p, idx) => (
               <div
                 key={p._id}
                 onClick={() => navigate(`/problem/${p._id}`)}
                 className={`
-                  grid grid-cols-[56px_1fr_90px] items-center py-2.5 px-2 bg-white
-                  hover:bg-gray-50 border-b border-gray-100 transition-all cursor-pointer
+                  grid grid-cols-[60px_1fr_110px] items-center py-3 px-3 bg-white/80 dark:bg-slate-900/65
+                  hover:bg-primary-50/80 dark:hover:bg-slate-800/75 border-b border-primary-100 dark:border-indigo-200/10 transition-all cursor-pointer
                 `}
                 style={{ fontSize: "1rem" }}
               >
-                {/* Serial Number */}
-                <div className="text-center text-gray-500 font-semibold">{(page - 1) * PAGE_SIZE + idx + 1}.</div>
-                {/* Title */}
-                <div className="pl-2 font-medium text-primary-800 hover:text-primary-600 hover:underline transition truncate">
+                <div className="text-center text-primary-800/70 dark:text-slate-400 font-semibold">{(page - 1) * PAGE_SIZE + idx + 1}.</div>
+                <div className="pl-2 font-medium text-primary-900 dark:text-slate-100 hover:text-primary-700 dark:hover:text-indigo-300 transition truncate">
                   {p.title}
                 </div>
-                {/* Level */}
-                <div className={`text-right pr-2 ${getDiff(p.level)}`}>{p.level}</div>
+                <div className="text-right pr-2">
+                  <span className={`inline-flex border rounded-full px-2.5 py-1 text-xs font-semibold ${getDiff(p.level)}`}>
+                    {p.level}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-4 mb-8">
               <button
-                className="px-3 py-1 rounded bg-primary-100 text-primary-800 font-semibold disabled:opacity-50"
+                className="px-3 py-1.5 rounded-lg bg-primary-100 dark:bg-slate-800 text-primary-800 dark:text-slate-200 font-semibold disabled:opacity-50"
                 disabled={page === 1}
                 onClick={() => setPage(page - 1)}
               >Prev</button>
@@ -162,13 +167,13 @@ export default function Practice() {
                   key={num}
                   onClick={() => setPage(num + 1)}
                   className={`
-                    px-3 py-1 rounded font-semibold transition
-                    ${page === num + 1 ? 'bg-primary-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-200 hover:bg-primary-50'}
+                    px-3 py-1.5 rounded-lg font-semibold transition
+                    ${page === num + 1 ? 'bg-primary-700 text-white shadow' : 'bg-white dark:bg-slate-900 text-primary-800 dark:text-slate-200 border border-primary-200 dark:border-indigo-200/20 hover:bg-primary-50 dark:hover:bg-slate-800'}
                   `}
                 >{num + 1}</button>
               ))}
               <button
-                className="px-3 py-1 rounded bg-primary-100 text-primary-800 font-semibold disabled:opacity-50"
+                className="px-3 py-1.5 rounded-lg bg-primary-100 dark:bg-slate-800 text-primary-800 dark:text-slate-200 font-semibold disabled:opacity-50"
                 disabled={page === totalPages}
                 onClick={() => setPage(page + 1)}
               >Next</button>
