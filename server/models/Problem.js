@@ -43,4 +43,8 @@ const ProblemSchema = new Schema({
     }
 });
 
+ProblemSchema.index({ level: 1, date: -1 });
+ProblemSchema.index({ email: 1, date: -1 });
+ProblemSchema.index({ title: 1 });
+
 module.exports =  mongoose.model('Problem', ProblemSchema);

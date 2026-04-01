@@ -93,11 +93,9 @@ export default function EditProfile() {
         return (
             <div className="flex flex-col min-h-screen">
                 <Navbar />
-                <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 navbar-spacing">
-                    <div className="w-full bg-white rounded-lg shadow border sm:max-w-sm xl:p-0">
-                        <div className="p-6 space-y-3 md:space-y-4 sm:p-6">
+                <section className="flex-grow flex items-start justify-center px-4 sm:px-6 navbar-spacing pb-8">
+                    <div className="w-full max-w-4xl glass-card rounded-3xl border border-primary-100 dark:border-indigo-200/20 p-6">
                             <LoadingSkeleton type="card" count={1} />
-                        </div>
                     </div>
                 </section>
             </div>
@@ -107,55 +105,69 @@ export default function EditProfile() {
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
-            <section className="flex-grow bg-gray-50 flex items-start justify-center px-6 navbar-spacing">
-                <div className="w-full bg-white rounded-lg shadow border sm:max-w-sm xl:p-0">
-                    <div className="p-6 space-y-3 md:space-y-4 sm:p-6">
+            <section className="flex-grow px-4 sm:px-6 navbar-spacing pb-8">
+                <div className="w-full max-w-6xl mx-auto">
+                    <section className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-700 dark:from-slate-950 dark:via-[#111936] dark:to-[#1a2856] text-white shadow-2xl mb-6 border border-white/10">
+                        <h1 className="text-2xl sm:text-3xl font-bold">Edit Profile</h1>
+                        <p className="text-white/80 mt-2">Update your public profile details and personal branding.</p>
+                    </section>
+
+                    <div className="max-w-4xl mx-auto glass-card rounded-3xl p-6 sm:p-8 border border-primary-100 dark:border-indigo-200/20">
                         <ErrorAlert 
                             error={error} 
                             show={showError} 
                             onClose={() => setShowError(false)}
                             className="mb-4"
                         />
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Edit Profile</h1>
-                        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-3" >
+
+                        <form onSubmit={handleSubmit} className="space-y-5 text-primary-900 dark:text-slate-100" >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                                <input type="text" name="name" value={user.name} onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required />
+                                <label htmlFor="name" className="block mb-2 text-sm font-semibold">Name</label>
+                                <input type="text" name="name" value={user.name} onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-primary-600 focus:border-primary-600 block w-full p-3" required />
                             </div>
                             <div>
-                                <label htmlFor="institute" className="block mb-2 text-sm font-medium text-gray-900">Institute</label>
-                                <input type="text" name="institute" value={user.institute || ""} onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                                <label htmlFor="institute" className="block mb-2 text-sm font-semibold">Institute</label>
+                                <input type="text" name="institute" value={user.institute || ""} onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-primary-600 focus:border-primary-600 block w-full p-3" />
+                            </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="location" className="block mb-2 text-sm font-semibold">Location</label>
+                                <input type="text" name="location" value={user.location || ""} onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-primary-600 focus:border-primary-600 block w-full p-3" />
                             </div>
                             <div>
-                                <label htmlFor="location" className="block mb-2 text-sm font-medium text-gray-900">Location</label>
-                                <input type="text" name="location" value={user.location || ""} onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                                <label htmlFor="skills" className="block mb-2 text-sm font-semibold">Skills (comma separated)</label>
+                                <input type="text" name="skills" value={user.skills || ""} onChange={onChange} className="bg-white/70 dark:bg-slate-900/80 border border-primary-200 dark:border-indigo-200/20 text-primary-900 dark:text-slate-100 text-sm rounded-xl focus:ring-primary-600 focus:border-primary-600 block w-full p-3" placeholder="e.g. JavaScript, C++, Python" />
                             </div>
-                            <div>
-                                <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900">Skills (comma separated)</label>
-                                <input type="text" name="skills" value={user.skills || ""} onChange={onChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="e.g. JavaScript, C++, Python" />
                             </div>
+
                             <div>
-                                <label htmlFor="image" className="block mb-2 text-sm font-medium text-gray-900">Profile Image</label>
+                                <label htmlFor="image" className="block mb-2 text-sm font-semibold">Profile Image</label>
                                 <input type="file" name="image" accept="image/*" onChange={handleImageChange}
-                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" />
-                                {user.image && (<img src={user.image} alt="Profile" className="mt-2 w-20 h-20 rounded-full object-cover" />)}
-                                <button type="button" onClick={() => { setUserImage(null); setUser(prev => ({ ...prev, image: "" })) }} className="text-xs text-red-500 underline ml-2">Remove Photo</button>
+                                    className="block w-full text-sm text-primary-900 dark:text-slate-100 border border-primary-200 dark:border-indigo-200/20 rounded-xl cursor-pointer bg-white/70 dark:bg-slate-900/80 focus:outline-none p-2" />
+                                {user.image && (<img src={user.image} alt="Profile" className="mt-3 w-20 h-20 rounded-full object-cover border border-primary-200 dark:border-indigo-200/20" />)}
+                                <button type="button" onClick={() => { setUserImage(null); setUser(prev => ({ ...prev, image: "" })) }} className="text-xs text-red-500 dark:text-rose-300 underline ml-1 mt-2">Remove Photo</button>
                             </div>
-                            <button 
-                                type="submit" 
-                                disabled={loading}
-                                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center disabled:opacity-50"
-                            >
-                                {loading ? (
-                                    <>
-                                        <LoadingSpinner size="sm" color="white" />
-                                        <span className="ml-2">Updating...</span>
-                                    </>
-                                ) : (
-                                    "Update Profile"
-                                )}
-                            </button>
-                            <button type="button" onClick={() => navigate(-1)} className="w-full text-gray-600 bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-2">Cancel</button>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                <button 
+                                    type="submit" 
+                                    disabled={loading}
+                                    className="w-full text-white bg-primary-700 hover:bg-primary-800 font-semibold rounded-xl text-sm px-5 py-3 text-center flex items-center justify-center disabled:opacity-50"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <LoadingSpinner size="sm" color="white" />
+                                            <span className="ml-2">Updating...</span>
+                                        </>
+                                    ) : (
+                                        "Update Profile"
+                                    )}
+                                </button>
+                                <button type="button" onClick={() => navigate(-1)} className="w-full text-primary-900 dark:text-slate-100 bg-primary-100/70 dark:bg-slate-800 hover:bg-primary-200 dark:hover:bg-slate-700 font-semibold rounded-xl text-sm px-5 py-3 text-center">Cancel</button>
+                            </div>
                         </form>
                     </div>
                 </div>

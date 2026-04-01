@@ -1,186 +1,287 @@
 # GenoCode
 
-![Tech Stack](https://img.shields.io/badge/stack-React%20%2B%20Node.js%20%2B%20MongoDB-Informational)
-![Status](https://img.shields.io/badge/status-In%20Development-yellow)
+![Tech Stack](https://img.shields.io/badge/stack-React%20%2B%20Node.js%20%2B%20MongoDB-informational)
+![Status](https://img.shields.io/badge/status-Active-success)
 
-GenoCode is a full-stack web application built to simulate competitive programming platforms like LeetCode, Codeforces, and HackerRank. It enables users to view problems, write and submit code in multiple languages, and get real-time verdicts (e.g., Accepted, WA, TLE).
+GenoCode is a full-stack coding platform inspired by LeetCode-style workflows. Users can solve problems in multiple languages, run code, submit against test cases, and get AI-powered review feedback.
 
-> ⚠️ This project is under development—stay tuned for new features and enhancements!
+## Version 2 Highlights
 
----
+- Modernized UI with responsive redesign and dark mode support
+- Route-level lazy loading for faster first-load performance
+- Server-side pagination/filter/search with optional cursor mode
+- Queue-backed compiler execution with Redis mode and memory fallback
+- Request tracing (`x-request-id`) and API rate limiting for reliability
+- Improved AI review caching and error handling
 
-## 🚀 Tech Stack
+## Tech Stack
 
-- **Frontend:** React (Vite) + Tailwind CSS + React Router + Monaco Editor + Framer Motion  
-- **Backend:** Node.js + Express.js + MongoDB + Mongoose  
-- **Compiler Service:** Node.js + Docker (G++, OpenJDK17, Python3)  
-- **Authentication:** JSON Web Tokens (JWT)  
-- **Media Storage:** Cloudinary (for profile pictures and assets)  
-- **Code Execution:** Isolated Docker containers  
+- Frontend: React (Vite), Tailwind CSS, React Router, Monaco Editor, Framer Motion
+- Main API: Node.js, Express, MongoDB, Mongoose
+- Compiler API: Node.js, Express, Docker-based execution
+- Auth: JWT
+- Media: Cloudinary
+- AI Review: Gemini API
 
----
+## Features
 
-## ⚙️ Features
+- User registration and login
+- Problem listing and detailed problem view
+- Run and submit in C++, Java, Python, JavaScript
+- Verdict handling (AC, WA, TLE, CE, RE)
+- User profile with submission history and heatmap
+- Admin problem create/update/delete flow
+- AI review panel for submitted code
+- Dark mode and responsive UI
+- Route-level lazy loading for faster initial load
+- Server-side pagination, filtering, and search for problem listing
+- Request ID logging and basic rate limiting
+- Queue-backed compiler flow (Redis mode + in-memory fallback)
 
-| Status | Feature                                 |
-|:------:|------------------------------------------|
-| ✅     | User registration & login               |
-| ✅     | Problem listing & detailed views         |
-| ✅     | Code submission in C++, Java, Python, JavaScript    |
-| ✅     | Real-time verdicts (Accepted, WA, TLE) |
-| ✅     | User profile & submission history       |
-| ✅     | Docker-based isolated code execution    |
-| ✅     | Admin panel for problem management      |
-| 🔜     | Leaderboard & contest system            |
+## Architecture
 
----
+This repo has 3 apps:
 
-## 🗂️ Project Structure
+- client: frontend app (Vite)
+- server: main backend (users, problems, submissions)
+- compiler: compiler/review backend (run, submit, review)
 
+Runtime flow:
+
+1. Frontend calls server for user/problem data.
+2. Frontend calls compiler API for run/submit/review actions.
+3. Compiler API fetches test cases from server when required and returns verdict/review response.
+
+Scalability notes:
+
+- Problem list endpoint supports page mode and cursor mode.
+- Compiler can run in distributed queue mode when REDIS_URL is configured.
+- Basic rate limiting is enabled on APIs to prevent traffic spikes.
+- Every request includes x-request-id for observability.
+
+## Project Structure
+
+```text
+GenoCode/
+|- client/
+|  |- public/templates/
+|  |- src/components/
+|  |- src/screens/
+|  |- package.json
+|- server/
+|  |- config/
+|  |- controllers/
+|  |- middleware/
+|  |- models/
+|  |- routes/
+|  |- validators/
+|  |- index.js
+|  |- package.json
+|- compiler/
+|  |- controllers/
+|  |- middlewares/
+|  |- routes/
+|  |- services/
+|  |- index.js
+|  |- package.json
+|- Readme.md
 ```
-GenoCode-main/
-├── client/               # Frontend (React + Vite)
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── public/
-│   └── src/
-├── server/               # Backend API (Express.js)
-│   ├── Dockerfile
-│   ├── index.js
-│   ├── config/
-│   ├── models/
-│   ├── routes/
-│   └── validators/
-├── compiler/             # Code execution service
-│   ├── Dockerfile
-│   ├── index.js
-│   ├── generateAIReview.js
-│   ├── generateFile.js
-│   ├── runCode.js
-│   └── submitCode.js
-├── .gitignore
-└── Readme.md             # Original project README
+
+## Environment Variables
+
+Create environment files for each app.
+
+### client/.env
+
+```env
+VITE_SERVER_URL=http://localhost:8000
+VITE_COMPILER_URL=http://localhost:8080/api
 ```
 
----
+### server/.env
 
-## 🛠️ Compiler Server (Code Execution Service)
+```env
+PORT=8000
+MONGODB_URL=<your_mongodb_connection_string>
+JWTSECRET=<your_jwt_secret>
 
-The **compiler server** is a separate backend microservice responsible for securely compiling and executing user-submitted code.
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_cloudinary_api_key>
+CLOUDINARY_API_SECRET=<your_cloudinary_api_secret>
 
-- **How it works:**
-    1. The main backend receives code submission from the user.
-    2. It sends the code, input, and selected language to the compiler server via REST API.
-    3. The compiler server launches a Docker container for the specified language, compiles and executes the code, and captures output/errors.
-    4. It returns the verdict (Accepted, WA, TLE, etc.) and execution details back to the backend, which updates the user.
+NODE_ENV=development
+```
 
-- **Tech Used:**  
-    - Node.js / Express.js for the service logic  
-    - Docker for isolated, secure code execution  
-    - Supports: C++, Java, Python
+### compiler/.env
 
-- **Benefits:**  
-    - Sandbox environment ensures user code can't affect the system  
-    - Flexible multi-language support  
-    - Easy to scale by running multiple containers in parallel
+```env
+PORT=8080
+DATABASE_SERVER=http://localhost:8000
+GEMINI_API=<your_gemini_api_key>
+PROMPT=<your_review_prompt>
 
----
+# optional cache tuning
+REVIEW_CACHE_TTL_MS=900000
+REVIEW_CACHE_MAX_ITEMS=200
 
-## 🧠 How It Works
+# optional: per-endpoint rate limits
+RUN_RATE_LIMIT_PER_MIN=60
+SUBMIT_RATE_LIMIT_PER_MIN=40
+REVIEW_RATE_LIMIT_PER_MIN=15
 
-1. User selects a problem  
-2. Writes code in the built-in editor  
-3. Submits → Backend calls the compiler server, which runs code in a Docker container  
-4. Code is compiled and tested against hidden test cases  
-5. Verdict (Accepted, WA, TLE, etc.) and output/errors are returned and displayed to user
+# optional: distributed queue mode (enables Bull + Redis)
+REDIS_URL=redis://localhost:6379
+QUEUE_NAME=compiler-jobs
+QUEUE_WORKER_CONCURRENCY=4
 
----
+# fallback in-memory queue settings when REDIS_URL is not set
+MAX_CONCURRENT_TASKS=4
+MAX_QUEUE_SIZE=200
+```
 
-## 🔧 Installation
+### server/.env (additional optional)
 
-### Prerequisites
+```env
+API_RATE_LIMIT_PER_MIN=300
+```
 
-- **Node.js & npm:** v18+  
-- **Docker & Docker Compose:** v20+  
-- **MongoDB:** connection URI  
-- **Cloudinary:** account credentials for media storage  
+## Local Setup
 
-### Setup Steps
+Prerequisites:
 
-1. **Clone the repository**  
-   ```bash
-   git clone https://github.com/Umesh-Verma07/GenoCode.git
-   cd GenoCode
-   ```
+- Node.js 18+
+- npm
+- Docker installed and running
+- MongoDB connection string
 
-2. **Configure environment variables**  
-   Create a `.env` file inside the `server/` directory:
-   ```env
-   PORT=8000
-   MONGODB_URL=<your_mongodb_connection_string>
-   CLOUDINARY_CLOUD_NAME=<your_cloud_name>
-   CLOUDINARY_API_KEY=<your_api_key>
-   CLOUDINARY_API_SECRET=<your_api_secret>
-   ```
-
-3. **Install dependencies**  
-   ```bash
-   # Backend
-   cd server
-   npm install
-
-   # Compiler service
-   cd ../compiler
-   npm install
-
-   # Frontend
-   cd ../client
-   npm install
-   ```
-
----
-
-## ▶️ Running Locally
-
-Open three terminal windows/tabs:
+Install dependencies:
 
 ```bash
-# Backend
-cd GenoCode/server
+cd server && npm install
+cd ../compiler && npm install
+cd ../client && npm install
+```
+
+Run all services in separate terminals:
+
+```bash
+# terminal 1: main API
+cd server
 npm start
 
-# Compiler Service
-cd GenoCode/compiler
-npm start
+# terminal 2: compiler API
+cd compiler
+node index.js
 
-# Frontend
-cd GenoCode/client
+# terminal 3: frontend
+cd client
 npm run dev
 ```
 
-Frontend will be available at `http://localhost:5173`. API runs on port `8000`, and compiler service on `8080`.
+Default local URLs:
 
----
+- Frontend: http://localhost:5173
+- Main API: http://localhost:8000
+- Compiler API: http://localhost:8080/api
 
-## 🐳 Running with Docker
+## API Route Prefixes
 
-1. **Build Docker images**  
-   ```bash
-   docker build -t oj-client client/
-   docker build -t oj-server server/
-   docker build -t oj-compiler compiler/
-   ```
+- server:
+  - /user
+  - /problem
+  - /submit
+- compiler:
+  - /api/run
+  - /api/submit
+  - /api/review
+  - /health
 
-2. **Run containers**  
-   ```bash
-   docker run -d -p 5173:5173 oj-client
-   docker run -d -p 8000:8000 --env-file server/.env oj-server
-   docker run -d -p 8080:8080 oj-compiler
-   ```
----
+## Problem List API Usage
 
-## 📬 Contact
+Page mode (default):
 
-Made by **Umesh Kumar Verma** – feel free to open issues or contribute!
+GET /problem/list?page=1&limit=15&level=All&search=&sort=newest
 
----
+Supported query params:
+
+- page: page number (1+)
+- limit: page size (1 to 100)
+- level: All, Easy, Medium, Hard
+- search: title search text
+- sort: newest, oldest, title_asc, title_desc
+
+Cursor mode (optional):
+
+GET /problem/list?limit=15&sort=newest&cursor=<date|id>
+
+Cursor mode is useful for infinite scroll and very large datasets.
+
+## Redis Queue Setup
+
+Use this only for compiler service queue mode.
+
+Local Redis with Docker:
+
+```bash
+docker run -d --name genocode-redis -p 6379:6379 redis:7-alpine
+```
+
+Compiler env for local Redis:
+
+```env
+REDIS_URL=redis://localhost:6379
+QUEUE_NAME=compiler-jobs
+QUEUE_WORKER_CONCURRENCY=4
+```
+
+Cloud Redis URL format examples:
+
+- redis://default:<password>@<host>:<port>
+- rediss://default:<password>@<host>:<port>
+
+If REDIS_URL is not set, compiler automatically uses in-memory queue fallback.
+
+## Health and Observability
+
+- Compiler health endpoint: GET /health
+- Request logs include:
+  - timestamp
+  - requestId
+  - method + route
+  - status code
+  - response time
+- Response header x-request-id is returned by server and compiler APIs.
+
+Example health response (compiler):
+
+```json
+{
+  "success": true,
+  "service": "compiler",
+  "queue": {
+    "mode": "memory"
+  }
+}
+```
+
+## Deploy Notes
+
+- Set all env variables in your hosting dashboards.
+- Update client env with deployed backend URLs.
+- Ensure compiler service can access Docker runtime.
+- Prefer rediss for managed Redis providers.
+- Keep queue and rate-limit values conservative first, then tune with traffic.
+- If AI review fails with status 429, verify Gemini quota/billing for your project.
+
+## Known Limitations
+
+- AI review depends on Gemini API quota and availability.
+- No automated test suite is configured yet.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+## Author
+
+Umesh Kumar Verma

@@ -19,33 +19,31 @@ export default function AIReviewPanel({ show, onClose, reviewText, loading }) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.97, opacity: 0, y: 40 }}
             transition={{ type: "spring", stiffness: 250, damping: 30 }}
-            className="relative w-[95vw] max-w-2xl rounded-3xl bg-green-50/95 shadow-2xl border border-green-300 p-8"
+            className="relative w-[95vw] max-w-3xl rounded-3xl bg-white/95 dark:bg-slate-900/95 shadow-2xl border border-primary-100 dark:border-indigo-200/20 p-6 sm:p-8"
             style={{
               boxShadow:
                 "0 4px 32px 4px rgba(70,120,255,0.10), 0 1.5px 15px rgba(30,64,175,0.10)",
               backdropFilter: "blur(8px)",
             }}
           >
-            {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 p-2 bg-white rounded-full shadow-md hover:bg-primary-100 transition"
+              className="absolute top-5 right-5 p-2 bg-white dark:bg-slate-800 rounded-full shadow-md hover:bg-primary-100 dark:hover:bg-slate-700 transition"
               aria-label="Close"
             >
-              <X size={22} className="text-gray-400 hover:text-red-500" />
+              <X size={22} className="text-gray-400 dark:text-slate-300 hover:text-red-500" />
             </button>
 
-            {/* Title and badge */}
             <div className="flex items-center mb-3 gap-2">
-              <span className="text-2xl font-extrabold text-primary-700 drop-shadow">AI Review</span>
-              <span className="inline-block bg-green-100 text-green-700 text-xs rounded-full px-2 py-0.5 font-semibold shadow">Beta</span>
+              <span className="text-2xl font-extrabold text-primary-700 dark:text-indigo-300 drop-shadow">AI Review</span>
+              <span className="inline-block bg-primary-100 dark:bg-indigo-500/20 text-primary-700 dark:text-indigo-200 text-xs rounded-full px-2 py-0.5 font-semibold shadow">Beta</span>
             </div>
-            {/* Accent line */}
-            <div className="h-1 w-16 rounded-full bg-gradient-to-r from-primary-500 via-green-400 to-blue-400 mb-6" />
+            <p className="text-sm text-primary-900/70 dark:text-slate-300 mb-3">Quality-focused feedback on structure, clarity, and performance.</p>
+            <div className="h-1 w-20 rounded-full bg-gradient-to-r from-primary-500 via-indigo-400 to-orange-400 mb-6" />
 
-            <div className="overflow-y-auto max-h-[65vh] prose prose-sm md:prose-base text-gray-800 custom-scroll">
+            <div className="overflow-y-auto max-h-[65vh] prose prose-sm md:prose-base dark:prose-invert max-w-none text-gray-800 dark:text-slate-200 custom-scroll pr-1">
               {loading ? (
-                <div className="flex flex-col items-center justify-center h-32 text-base text-gray-600">
+                <div className="flex flex-col items-center justify-center h-32 text-base text-gray-600 dark:text-slate-300">
                   <LoadingSpinner size="lg" color="primary" text="AI is analyzing your code..." />
                 </div>
               ) : (

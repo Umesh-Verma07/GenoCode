@@ -65,11 +65,15 @@ export default function CreateProblem() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow container mx-auto navbar-spacing px-4 py-7">
-        <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
-          <h1 className="text-2xl font-bold mb-4">Create New Problem</h1>
+      <main className="flex-grow w-full max-w-6xl mx-auto navbar-spacing px-4 pb-10">
+        <section className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-700 dark:from-slate-950 dark:via-[#111936] dark:to-[#1a2856] text-white shadow-2xl mb-6 border border-white/10">
+          <h1 className="text-2xl sm:text-3xl font-bold">Create New Problem</h1>
+          <p className="text-white/80 mt-2">Add a clean statement, difficulty, and reliable test cases.</p>
+        </section>
+
+        <div className="max-w-4xl mx-auto glass-card rounded-3xl p-6 sm:p-8 border border-primary-100 dark:border-indigo-200/20">
 
           <ErrorAlert 
             error={error} 
@@ -78,42 +82,42 @@ export default function CreateProblem() {
             className="mb-4"
           />
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-primary-900 dark:text-slate-100">
             <div>
-              <label className="block mb-1 font-medium">Title</label>
-              <input type="text" className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              <label className="block mb-2 text-sm font-semibold">Title</label>
+              <input type="text" className="w-full border border-primary-200 dark:border-indigo-200/20 bg-white/70 dark:bg-slate-900/75 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500" value={title} onChange={(e) => setTitle(e.target.value)} required />
             </div>
             <div>
-              <label className="block mb-1 font-medium">Description</label>
-              <textarea className="w-full border rounded px-3 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-primary-500" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              <label className="block mb-2 text-sm font-semibold">Description</label>
+              <textarea className="w-full border border-primary-200 dark:border-indigo-200/20 bg-white/70 dark:bg-slate-900/75 rounded-xl px-3 py-2.5 h-40 focus:outline-none focus:ring-2 focus:ring-primary-500" value={description} onChange={(e) => setDescription(e.target.value)} required />
             </div>
             <div>
-              <label className="block mb-1 font-medium">Difficulty Level</label>
-              <select className="w-full border rounded px-3 py-2" value={level} onChange={(e) => setLevel(e.target.value)} >
+              <label className="block mb-2 text-sm font-semibold">Difficulty Level</label>
+              <select className="w-full border border-primary-200 dark:border-indigo-200/20 bg-white/70 dark:bg-slate-900/75 rounded-xl px-3 py-2.5" value={level} onChange={(e) => setLevel(e.target.value)} >
                 <option>Easy</option>
                 <option>Medium</option>
                 <option>Hard</option>
               </select>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-2xl border border-primary-100 dark:border-indigo-200/20 p-4 bg-white/50 dark:bg-slate-900/45">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Test Cases</h2>
-                <button type="button" onClick={addTestCase} className="text-sm text-primary-600 hover:underline"> + Add Case </button>
+                <button type="button" onClick={addTestCase} className="text-sm font-semibold text-primary-700 dark:text-indigo-300 hover:underline">+ Add Case</button>
               </div>
 
               {testCases.map((tc, idx) => (
-                <div key={idx} className="grid grid-cols-6 gap-3 items-end" >
-                  <div className="col-span-2">
-                    <label className="block mb-1 text-sm">Input</label>
-                    <textarea cols="10" className="w-full border rounded px-2 py-1" value={tc.input} onChange={(e) => handleChangeCase(idx, 'input', e.target.value)} required />
+                <div key={idx} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end rounded-xl border border-primary-100 dark:border-indigo-200/20 p-3 bg-white/70 dark:bg-slate-900/60" >
+                  <div className="sm:col-span-2">
+                    <label className="block mb-1 text-sm font-medium">Input</label>
+                    <textarea cols="10" className="w-full border border-primary-200 dark:border-indigo-200/20 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-900" value={tc.input} onChange={(e) => handleChangeCase(idx, 'input', e.target.value)} required />
                   </div>
-                  <div className="col-span-2">
-                    <label className="block mb-1 text-sm">Output</label>
-                    <textarea className="w-full border rounded px-2 py-1" value={tc.output} onChange={(e) => handleChangeCase(idx, 'output', e.target.value)} required/>
+                  <div className="sm:col-span-2">
+                    <label className="block mb-1 text-sm font-medium">Output</label>
+                    <textarea className="w-full border border-primary-200 dark:border-indigo-200/20 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-900" value={tc.output} onChange={(e) => handleChangeCase(idx, 'output', e.target.value)} required/>
                   </div>
-                  <div className="col-span-2 text-right">
-                    <button type="button" onClick={() => removeTestCase(idx)} className="text-red-600 hover:underline text-sm" > Remove </button>
+                  <div className="sm:col-span-2 text-right">
+                    <button type="button" onClick={() => removeTestCase(idx)} className="text-red-600 dark:text-rose-300 hover:underline text-sm font-medium" >Remove</button>
                   </div>
                 </div>
               ))}
@@ -121,7 +125,7 @@ export default function CreateProblem() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition flex items-center justify-center disabled:opacity-50" 
+              className="w-full bg-primary-700 text-white py-3 rounded-xl hover:bg-primary-800 transition flex items-center justify-center disabled:opacity-50 font-semibold" 
             >
               {loading ? (
                 <>
